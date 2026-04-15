@@ -273,10 +273,10 @@ export const Home: React.FC = () => {
                   <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>verified_user</span>
                   <span className="text-xs font-bold uppercase tracking-wider">Pagamento Criptografado</span>
                 </div>
-              </form>
+              </div>
+            </form>
             </div>
           </div>
-        </div>
       </section>
 
       {/* Trust Features */}
