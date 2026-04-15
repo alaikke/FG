@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_BASE } from '../config';
 
 interface OrderData {
   id: string;
@@ -31,7 +32,7 @@ export const TrackOrder: React.FC = () => {
     setSearched(false);
 
     try {
-      const res = await fetch(`http://localhost:3333/api/track/${encodeURIComponent(cleanEmail)}`);
+      const res = await fetch(`${API_BASE}/api/track/${encodeURIComponent(cleanEmail)}`);
       const data = await res.json();
 
       if (!res.ok) {

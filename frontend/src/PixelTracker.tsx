@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
+import { API_BASE } from './config';
 
 export const PixelTracker: React.FC = () => {
   const location = useLocation();
@@ -10,7 +11,7 @@ export const PixelTracker: React.FC = () => {
     if (injected.current) return;
     injected.current = true;
 
-    fetch('http://localhost:3333/api/settings/public')
+    fetch(`${API_BASE}/api/settings/public`)
       .then(r => r.json())
       .then(data => {
         // Google Tag (gtag.js)

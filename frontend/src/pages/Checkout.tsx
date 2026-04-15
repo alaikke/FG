@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { API_BASE } from '../config';
 
 const stripePromise = loadStripe('pk_live_51TLx34LHQ2vDRNS385gwTBunqLPyWwN8cSBy42XbJFMYirFPy05a6FSleZ73zPjCajoPxmwhAJtKPnq07Ty9Eo9b00Ct7UbMCV');
 
@@ -34,7 +35,7 @@ const CheckoutInner: React.FC<{ checkoutState: any, orderId: string }> = ({ chec
         }
 
         // 1. Update order with client details
-        await fetch(`http://localhost:3333/api/orders/${orderId}`, {
+        await fetch(`${API_BASE}/api/orders/${orderId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
@@ -65,7 +66,7 @@ const CheckoutInner: React.FC<{ checkoutState: any, orderId: string }> = ({ chec
           currentFollowers: checkoutState?.foundProfile?.followers || null,
         };
 
-        const response = await fetch('http://localhost:3333/api/checkout', {
+        const response = await fetch(`${API_BASE}/api/checkout`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(pixData)
@@ -221,7 +222,7 @@ export const Checkout: React.FC = () => {
   useEffect(() => {
     if (!checkoutState?.package) return;
 
-    fetch('http://localhost:3333/api/stripe/create-payment-intent', {
+    fetch(`${API_BASE}/api/stripe/create-payment-intent`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

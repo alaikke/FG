@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { API_BASE } from '../config';
 
-const API = 'http://localhost:3333';
+const API = API_BASE;
 
 // ─── Helper ───
 const authFetch = (url: string, opts: any = {}) => {

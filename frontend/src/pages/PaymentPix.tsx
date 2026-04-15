@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { API_BASE } from '../config';
 
 export const PaymentPix: React.FC = () => {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ export const PaymentPix: React.FC = () => {
     
     const poller = setInterval(async () => {
       try {
-        const res = await fetch(`http://localhost:3333/api/orders/${paymentState.orderId}`);
+        const res = await fetch(`${API_BASE}/api/orders/${paymentState.orderId}`);
         const data = await res.json();
         if (data.paymentStatus === 'PAID') {
           clearInterval(poller);

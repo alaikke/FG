@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE } from '../config';
 
 const fallbackPackages = [
   { id: '1', followers: '100', subtitle: 'Volume Imediato', price: '9,90', icon: 'person', features: ['Sem senha', 'Entrega Rápida'], tag: null },
@@ -22,7 +23,7 @@ export const Home: React.FC = () => {
 
   // Fetch products from API
   useEffect(() => {
-    fetch('http://localhost:3333/api/products')
+    fetch(`${API_BASE}/api/products`)
       .then(r => r.json())
       .then(data => {
         if (data.products?.length) {

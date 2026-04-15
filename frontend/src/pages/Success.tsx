@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { API_BASE } from '../config';
 
 interface SuccessState {
   orderId?: string;
@@ -13,7 +14,7 @@ export const Success: React.FC = () => {
 
   useEffect(() => {
     if (!state?.orderId) return;
-    fetch(`http://localhost:3333/api/orders/${state.orderId}`)
+    fetch(`${API_BASE}/api/orders/${state.orderId}`)
       .then(res => res.json())
       .then(data => setOrderData(data))
       .catch(() => {});

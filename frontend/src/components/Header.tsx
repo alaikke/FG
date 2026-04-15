@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { API_BASE } from '../config';
 
 export const Header: React.FC = () => {
   const [logoUrl, setLogoUrl] = useState('');
@@ -18,7 +19,7 @@ export const Header: React.FC = () => {
   };
 
   useEffect(() => {
-    fetch('http://localhost:3333/api/settings/public')
+    fetch(`${API_BASE}/api/settings/public`)
       .then(r => r.json())
       .then(d => { if (d.logoUrl) setLogoUrl(d.logoUrl); })
       .catch(() => {});
