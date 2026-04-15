@@ -51,7 +51,9 @@ export const Header: React.FC = () => {
             <span className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.6)]"></span>
             Suporte
           </a>
-          <button className="material-symbols-outlined md:hidden p-2 text-slate-600 hover:text-blue-600 transition-transform active:scale-90">menu</button>
+          <button className="md:hidden p-2 text-slate-600 hover:text-blue-600 transition-transform active:scale-90 flex items-center justify-center">
+            <span className="material-symbols-outlined">menu</span>
+          </button>
         </div>
       </div>
     </nav>
