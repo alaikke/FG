@@ -126,10 +126,6 @@ export const PaymentPix: React.FC = () => {
         </button>
       </section>
 
-      {/* Action to advance to next step logic (simulated for dev) */}
-      <button onClick={() => navigate('/success')} className="w-full text-center text-primary text-sm font-semibold hover:underline block pt-2">
-        (Dev) Simular Pagamento Aprovado
-      </button>
 
       {/* Instructions */}
       <section className="bg-surface-container-low p-6 rounded-3xl space-y-6">
