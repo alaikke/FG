@@ -24,7 +24,7 @@ const CheckoutInner: React.FC<{ checkoutState: any, orderId: string }> = ({ chec
       name: formData.get('name'),
       email: formData.get('email'),
       phone: formData.get('phone'),
-      document: formData.get('document') || "00000000000",
+      document: formData.get('document'),
     };
 
     try {
@@ -118,8 +118,8 @@ const CheckoutInner: React.FC<{ checkoutState: any, orderId: string }> = ({ chec
               <input name="phone" required className="w-full bg-surface-container-high border-none rounded-2xl px-5 py-4 focus:ring-2 focus:ring-primary/40 font-medium placeholder:text-outline text-on-surface outline-none" placeholder="(00) 00000-0000" type="tel" />
             </div>
             <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-bold text-on-surface-variant ml-1">CPF (Obrigatório para PIX)</label>
-              <input name="document" required={paymentMethod === 'pix'} className="w-full bg-surface-container-high border-none rounded-2xl px-5 py-4 focus:ring-2 focus:ring-primary/40 font-medium placeholder:text-outline text-on-surface outline-none" placeholder="000.000.000-00" type="text" />
+              <label className="text-xs font-bold text-on-surface-variant ml-1">CPF</label>
+              <input name="document" required className="w-full bg-surface-container-high border-none rounded-2xl px-5 py-4 focus:ring-2 focus:ring-primary/40 font-medium placeholder:text-outline text-on-surface outline-none" placeholder="000.000.000-00" type="text" />
             </div>
           </div>
         </div>
