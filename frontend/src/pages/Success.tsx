@@ -41,17 +41,13 @@ export const Success: React.FC = () => {
           });
         }
         
-        // Google Ads Purchase Event (GTAG)
+        // Google Ads Purchase Event (GTAG) - Código de Conversão
         if ((window as any).gtag) {
-          (window as any).gtag('event', 'purchase', {
-            transaction_id: finalOrderId,
-            value: priceVal,
-            currency: 'BRL',
-            items: [{
-              item_name: `${orderData.followersCount} Seguidores`,
-              price: priceVal,
-              quantity: 1
-            }]
+          (window as any).gtag('event', 'conversion', {
+            'send_to': 'AW-18092090954/E_S8CIyDr5wcEMrM_bJD',
+            'value': priceVal,
+            'currency': 'BRL',
+            'transaction_id': finalOrderId
           });
         }
       }
