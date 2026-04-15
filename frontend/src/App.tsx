@@ -10,6 +10,10 @@ import { Success } from './pages/Success';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { Blog } from './pages/Blog';
 import { BlogPost } from './pages/BlogPost';
+import { Terms } from './pages/Terms';
+import { Privacy } from './pages/Privacy';
+import { HelpCenter } from './pages/HelpCenter';
+import { WhatsApp } from './pages/WhatsApp';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -39,6 +43,10 @@ function App() {
           <Route path="success" element={<Success />} />
           <Route path="blog" element={<Blog />} />
           <Route path="blog/:slug" element={<BlogPost />} />
+          <Route path="termos" element={<Terms />} />
+          <Route path="privacidade" element={<Privacy />} />
+          <Route path="ajuda" element={<HelpCenter />} />
+          <Route path="whatsapp" element={<WhatsApp />} />
         </Route>
       </Routes>
     </BrowserRouter>

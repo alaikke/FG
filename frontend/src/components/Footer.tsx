@@ -14,15 +14,15 @@ export const Footer: React.FC = () => {
         <div>
           <h5 className="font-bold mb-4 text-slate-900">Links Rápidos</h5>
           <ul className="space-y-2">
-            <li><Link to="#" className="text-slate-500 hover:text-blue-500 text-sm transition-transform hover:translate-x-1 inline-block">Termos de Serviço</Link></li>
-            <li><Link to="#" className="text-slate-500 hover:text-blue-500 text-sm transition-transform hover:translate-x-1 inline-block">Política de Privacidade</Link></li>
+            <li><Link to="/termos" className="text-slate-500 hover:text-blue-500 text-sm transition-transform hover:translate-x-1 inline-block">Termos de Serviço</Link></li>
+            <li><Link to="/privacidade" className="text-slate-500 hover:text-blue-500 text-sm transition-transform hover:translate-x-1 inline-block">Política de Privacidade</Link></li>
           </ul>
         </div>
         <div>
           <h5 className="font-bold mb-4 text-slate-900">Ajuda</h5>
           <ul className="space-y-2">
-            <li><Link to="#" className="text-slate-500 hover:text-blue-500 text-sm transition-transform hover:translate-x-1 inline-block">Suporte via WhatsApp</Link></li>
-            <li><Link to="#" className="text-slate-500 hover:text-blue-500 text-sm transition-transform hover:translate-x-1 inline-block">Central de Ajuda</Link></li>
+            <li><Link to="/whatsapp" className="text-slate-500 hover:text-blue-500 text-sm transition-transform hover:translate-x-1 inline-block">Suporte via WhatsApp</Link></li>
+            <li><Link to="/ajuda" className="text-slate-500 hover:text-blue-500 text-sm transition-transform hover:translate-x-1 inline-block">Central de Ajuda</Link></li>
           </ul>
         </div>
         <div>
