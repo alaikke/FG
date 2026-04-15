@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FollowPulse | Cresça seu Instagram</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed": "#002265",
+                    "surface-container-highest": "#dbe1ff",
+                    "background": "#faf8ff",
+                    "tertiary-fixed": "#61c2ff",
+                    "surface": "#faf8ff",
+                    "secondary-dim": "#681ad9",
+                    "surface-bright": "#faf8ff",
+                    "on-tertiary-fixed-variant": "#004463",
+                    "surface-tint": "#0053dc",
+                    "tertiary-container": "#61c2ff",
+                    "on-secondary-fixed-variant": "#702ae1",
+                    "secondary": "#742fe5",
+                    "on-primary-fixed-variant": "#003ca5",
+                    "tertiary-fixed-dim": "#34b5fa",
+                    "on-error-container": "#65000b",
+                    "primary-fixed": "#acbfff",
+                    "surface-container": "#ebedff",
+                    "on-secondary": "#fdf7ff",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed-dim": "#deccff",
+                    "on-error": "#fff7f6",
+                    "surface-container-high": "#e3e7ff",
+                    "inverse-primary": "#618bff",
+                    "on-background": "#243156",
+                    "secondary-fixed": "#eaddff",
+                    "surface-dim": "#cfd9ff",
+                    "inverse-surface": "#070d20",
+                    "on-surface": "#243156",
+                    "outline-variant": "#a4b1de",
+                    "surface-variant": "#dbe1ff",
+                    "on-primary": "#faf8ff",
+                    "on-tertiary": "#f5f9ff",
+                    "primary-dim": "#0049c2",
+                    "on-primary-container": "#003592",
+                    "error": "#ac3434",
+                    "tertiary-dim": "#005980",
+                    "surface-container-low": "#f2f3ff",
+                    "error-dim": "#70030f",
+                    "on-secondary-fixed": "#5100b3",
+                    "primary-fixed-dim": "#98b1ff",
+                    "on-surface-variant": "#515e86",
+                    "outline": "#6d79a4",
+                    "error-container": "#f56965",
+                    "inverse-on-surface": "#969cb5",
+                    "primary-container": "#acbfff",
+                    "tertiary": "#006592",
+                    "secondary-container": "#eaddff",
+                    "on-tertiary-fixed": "#002336",
+                    "primary": "#0053dc",
+                    "on-tertiary-container": "#003b56",
+                    "on-secondary-container": "#6617d7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Plus Jakarta Sans"],
+                    "label": ["Plus Jakarta Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tonal-shift { background-color: #f2f3ff; }
+        .glass-nav {
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+        }
+        .package-card.selected {
+            border-color: #0053dc;
+            background-color: #ffffff;
+            box-shadow: 0 20px 25px -5px rgb(0 83 220 / 0.1), 0 8px 10px -6px rgb(0 83 220 / 0.1);
+            transform: translateY(-4px);
+        }
+        .package-card.selected .check-badge {
+            display: flex;
+        }
+        .package-card.selected .icon-container {
+            background-image: linear-gradient(to bottom right, #0053dc, #742fe5);
+            color: white !important;
+        }
+        .package-card.selected .icon-container span {
+            color: white !important;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body">
+<!-- TopAppBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/70 backdrop-blur-xl shadow-[0px_12px_32px_rgba(36,49,86,0.06)]">
+<div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-600 text-3xl" style="font-variation-settings: 'FILL' 1;">insights</span>
+<span class="text-2xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-headline tracking-tight">FollowPulse</span>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-blue-600 font-bold border-b-2 border-blue-600 py-1 transition-colors duration-300" href="#">Início</a>
+<a class="text-slate-600 font-medium hover:text-purple-600 transition-colors duration-300" href="#packages">Preços</a>
+<a class="text-slate-600 font-medium hover:text-purple-600 transition-colors duration-300" href="#">Como Funciona</a>
+<a class="text-slate-600 font-medium hover:text-purple-600 transition-colors duration-300" href="#">Suporte</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined p-2 text-slate-600 hover:text-blue-600 transition-transform active:scale-90">menu</button>
+</div>
+</div>
+</nav>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative overflow-hidden pt-16 pb-24 md:pt-24 md:pb-32 px-6">
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+<div class="z-10">
+<div class="inline-flex items-center gap-2 bg-secondary-container px-4 py-2 rounded-full mb-6">
+<span class="material-symbols-outlined text-on-secondary-container text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-on-secondary-container text-sm font-semibold tracking-wide">LÍDER EM CRESCIMENTO SOCIAL</span>
+</div>
+<h1 class="font-headline text-5xl md:text-7xl font-extrabold tracking-tight text-on-background leading-tight mb-6">
+                    Impulsione seu <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Instagram</span> hoje.
+                </h1>
+<p class="text-lg text-on-surface-variant max-w-xl mb-10 leading-relaxed">
+                    Aumente sua autoridade e alcance com seguidores reais e entrega imediata. A solução mais segura e rápida para o seu perfil profissional.
+                </p>
+<div class="flex flex-wrap gap-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">security</span>
+<span class="text-sm font-medium">Entrega Segura</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">bolt</span>
+<span class="text-sm font-medium">Início Imediato</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">support_agent</span>
+<span class="text-sm font-medium">Suporte 24/7</span>
+</div>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -top-12 -right-12 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-12 -left-12 w-64 h-64 bg-secondary/10 rounded-full blur-3xl"></div>
+<div class="relative rounded-3xl overflow-hidden shadow-2xl transform lg:rotate-3 hover:rotate-0 transition-transform duration-700">
+<img alt="Jovem influenciador feliz e sorridente segurando um smartphone" class="w-full h-[450px] object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkqlFzKGpCNHFXdC24CcGM8szS2IxUNGJRmDq45buHGSr_Ts6n1lzFyCQcm_4aUczczIbxZOQi0TuCV4PqRHtlv6F9WKpqugeqkrlIwxvL1UC-koORt3QMHYF7RvMnslpdYmN-GzYopTL2INSOslIYgScyLpXwEPAaoVYDpfQaBGZGr8nhX7By_CgTJvoDgQLSrolWfRUhogyPrJ4afXcYf3jaxa3TetqqZFNFqkSZL9TnkzoRvlKlYe73GlX4tppa9eKDNGA9DBgk"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
+<div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 w-full border border-white/20">
+<div class="flex justify-between items-center text-white">
+<div>
+<p class="text-xs uppercase tracking-widest opacity-80">Novos Seguidores</p>
+<p class="text-2xl font-bold">+12,480</p>
+</div>
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Content: Package Selector -->
+<section class="bg-surface-container-low py-24 px-6" id="packages">
+<div class="max-w-6xl mx-auto">
+<div class="text-center mb-16">
+<h2 class="font-headline text-3xl md:text-4xl font-bold mb-4">Escolha seu pacote de impacto</h2>
+<p class="text-on-surface-variant">Clique no plano desejado para iniciar sua jornada.</p>
+</div>
+<!-- Variable Product Selector Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+<!-- 100 Seguidores -->
+<div class="package-card group relative bg-surface-container-lowest p-8 rounded-[2rem] border-2 border-transparent hover:border-primary/20 transition-all duration-300 cursor-pointer flex flex-col items-center text-center" onclick="selectPackage(this, '100 Seguidores', 'R$ 9,90')">
+<div class="check-badge hidden absolute top-6 right-6 w-8 h-8 rounded-full bg-primary items-center justify-center text-white">
+<span class="material-symbols-outlined text-lg">check</span>
+</div>
+<div class="icon-container w-16 h-16 rounded-2xl bg-primary/5 flex items-center justify-center mb-6 transition-colors">
+<span class="material-symbols-outlined text-primary text-3xl">person</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">100</h3>
+<p class="text-slate-500 mb-6 uppercase text-xs tracking-widest font-bold">Seguidores Reais</p>
+<div class="text-4xl font-black mb-6">R$ 9<span class="text-lg font-medium">,90</span></div>
+<ul class="space-y-3 text-sm text-on-surface-variant w-full">
+<li class="flex items-center gap-2 justify-center"><span class="material-symbols-outlined text-green-500 text-lg">check_circle</span> Sem senha</li>
+<li class="flex items-center gap-2 justify-center"><span class="material-symbols-outlined text-green-500 text-lg">check_circle</span> Entrega Rápida</li>
+</ul>
+</div>
+<!-- 1.000 Seguidores -->
+<div class="package-card group relative bg-surface-container-lowest p-8 rounded-[2rem] border-2 border-transparent hover:border-primary/20 transition-all duration-300 cursor-pointer flex flex-col items-center text-center" onclick="selectPackage(this, '1.000 Seguidores', 'R$ 39,90')">
+<div class="check-badge hidden absolute top-6 right-6 w-8 h-8 rounded-full bg-primary items-center justify-center text-white">
+<span class="material-symbols-outlined text-lg">check</span>
+</div>
+<div class="icon-container w-16 h-16 rounded-2xl bg-primary/5 flex items-center justify-center mb-6 transition-colors">
+<span class="material-symbols-outlined text-primary text-3xl">group</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">1.000</h3>
+<p class="text-slate-500 mb-6 uppercase text-xs tracking-widest font-bold">Seguidores Reais</p>
+<div class="text-4xl font-black mb-6">R$ 39<span class="text-lg font-medium">,90</span></div>
+<ul class="space-y-3 text-sm text-on-surface-variant w-full">
+<li class="flex items-center gap-2 justify-center"><span class="material-symbols-outlined text-green-500 text-lg">check_circle</span> Reposição 30 dias</li>
+<li class="flex items-center gap-2 justify-center"><span class="material-symbols-outlined text-green-500 text-lg">check_circle</span> Perfil Brasileiro</li>
+</ul>
+</div>
+<!-- 2.000 Seguidores -->
+<div class="package-card group relative bg-surface-container-lowest p-8 rounded-[2rem] border-2 border-transparent hover:border-primary/20 transition-all duration-300 cursor-pointer flex flex-col items-center text-center" onclick="selectPackage(this, '2.000 Seguidores', 'R$ 69,90')">
+<div class="check-badge hidden absolute top-6 right-6 w-8 h-8 rounded-full bg-primary items-center justify-center text-white">
+<span class="material-symbols-outlined text-lg">check</span>
+</div>
+<div class="icon-container w-16 h-16 rounded-2xl bg-primary/5 flex items-center justify-center mb-6 transition-colors">
+<span class="material-symbols-outlined text-primary text-3xl">person_add</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">2.000</h3>
+<p class="text-slate-500 mb-6 uppercase text-xs tracking-widest font-bold">Seguidores Premium</p>
+<div class="text-4xl font-black mb-6">R$ 69<span class="text-lg font-medium">,90</span></div>
+<ul class="space-y-3 text-sm text-on-surface-variant w-full">
+<li class="flex items-center gap-2 justify-center"><span class="material-symbols-outlined text-green-500 text-lg">check_circle</span> Alta Qualidade</li>
+<li class="flex items-center gap-2 justify-center"><span class="material-symbols-outlined text-green-500 text-lg">check_circle</span> Sem queda</li>
+</ul>
+</div>
+<!-- 5.000 Seguidores - MAIS POPULAR -->
+<div class="package-card selected group relative bg-surface-container-lowest p-8 rounded-[2rem] border-2 border-transparent hover:border-primary/20 transition-all duration-300 cursor-pointer flex flex-col items-center text-center" onclick="selectPackage(this, '5.000 Seguidores', 'R$ 89,90')">
+<div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-secondary text-white px-6 py-1 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg z-10 whitespace-nowrap">
+                        Mais Popular
+                    </div>
+<div class="check-badge flex absolute top-6 right-6 w-8 h-8 rounded-full bg-primary items-center justify-center text-white">
+<span class="material-symbols-outlined text-lg">check</span>
+</div>
+<div class="icon-container w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mb-6 transition-colors">
+<span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings: 'FILL' 1;">stars</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">5.000</h3>
+<p class="text-slate-500 mb-6 uppercase text-xs tracking-widest font-bold">Melhor Custo-Benefício</p>
+<div class="text-4xl font-black mb-6">R$ 89<span class="text-lg font-medium">,90</span></div>
+<ul class="space-y-3 text-sm text-on-surface-variant w-full">
+<li class="flex items-center gap-2 justify-center"><span class="material-symbols-outlined text-green-500 text-lg">check_circle</span> Entrega Prioritária</li>
+<li class="flex items-center gap-2 justify-center"><span class="material-symbols-outlined text-green-500 text-lg">check_circle</span> Suporte VIP 24h</li>
+</ul>
+</div>
+<!-- 10.000 Seguidores -->
+<div class="package-card group relative bg-surface-container-lowest p-8 rounded-[2rem] border-2 border-transparent hover:border-primary/20 transition-all duration-300 cursor-pointer flex flex-col items-center text-center" onclick="selectPackage(this, '10.000 Seguidores', 'R$ 169,90')">
+<div class="check-badge hidden absolute top-6 right-6 w-8 h-8 rounded-full bg-primary items-center justify-center text-white">
+<span class="material-symbols-outlined text-lg">check</span>
+</div>
+<div class="icon-container w-16 h-16 rounded-2xl bg-primary/5 flex items-center justify-center mb-6 transition-colors">
+<span class="material-symbols-outlined text-primary text-3xl">rocket_launch</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">10.000</h3>
+<p class="text-slate-500 mb-6 uppercase text-xs tracking-widest font-bold">Autoridade Máxima</p>
+<div class="text-4xl font-black mb-6">R$ 169<span class="text-lg font-medium">,90</span></div>
+<ul class="space-y-3 text-sm text-on-surface-variant w-full">
+<li class="flex items-center gap-2 justify-center"><span class="material-symbols-outlined text-green-500 text-lg">check_circle</span> +1.000 Curtidas Grátis</li>
+<li class="flex items-center gap-2 justify-center"><span class="material-symbols-outlined text-green-500 text-lg">check_circle</span> Sigilo Absoluto</li>
+</ul>
+</div>
+<!-- 25.000 Seguidores -->
+<div class="package-card group relative bg-surface-container-lowest p-8 rounded-[2rem] border-2 border-transparent hover:border-primary/20 transition-all duration-300 cursor-pointer flex flex-col items-center text-center" onclick="selectPackage(this, '25.000 Seguidores', 'R$ 349,90')">
+<div class="check-badge hidden absolute top-6 right-6 w-8 h-8 rounded-full bg-primary items-center justify-center text-white">
+<span class="material-symbols-outlined text-lg">check</span>
+</div>
+<div class="icon-container w-16 h-16 rounded-2xl bg-primary/5 flex items-center justify-center mb-6 transition-colors">
+<span class="material-symbols-outlined text-primary text-3xl">diamond</span>
+</div>
+<h3 class="text-2xl font-bold mb-2">25.000</h3>
+<p class="text-slate-500 mb-6 uppercase text-xs tracking-widest font-bold">Plano Influenciador</p>
+<div class="text-4xl font-black mb-6">R$ 349<span class="text-lg font-medium">,90</span></div>
+<ul class="space-y-3 text-sm text-on-surface-variant w-full">
+<li class="flex items-center gap-2 justify-center"><span class="material-symbols-outlined text-green-500 text-lg">check_circle</span> Combo Engajamento</li>
+<li class="flex items-center gap-2 justify-center"><span class="material-symbols-outlined text-green-500 text-lg">check_circle</span> Garantia Vitalícia</li>
+</ul>
+</div>
+</div>
+<!-- Input Form Section -->
+<div class="max-w-2xl mx-auto bg-white border-2 border-primary/10 p-8 rounded-[2.5rem] shadow-xl shadow-primary/5">
+<div class="flex flex-col gap-6">
+<div class="flex items-center justify-between pb-4 border-b border-slate-100">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">shopping_cart</span>
+</div>
+<div>
+<p class="text-xs text-slate-500 uppercase font-bold tracking-widest">Plano Selecionado</p>
+<p class="text-lg font-black text-primary" id="selected-plan-text">5.000 Seguidores</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs text-slate-500 uppercase font-bold tracking-widest">Total</p>
+<p class="text-xl font-black text-on-background" id="selected-price-text">R$ 89,90</p>
+</div>
+</div>
+<div>
+<label class="block text-sm font-bold text-on-surface-variant mb-3 uppercase tracking-wider">Qual o seu @Instagram?</label>
+<div class="relative group">
+<span class="absolute left-6 top-1/2 -translate-y-1/2 text-primary font-bold text-xl">@</span>
+<input class="w-full pl-12 pr-6 py-5 bg-surface-container-low rounded-2xl border-2 border-transparent focus:border-primary/20 focus:bg-white transition-all outline-none text-on-background font-medium placeholder:text-slate-400 text-lg" placeholder="nomedeusuario" required="" type="text"/>
+</div>
+<p class="text-xs text-slate-500 mt-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">lock</span>
+                            Sua conta deve estar em modo **Público**. Nunca pedimos sua senha.
+                        </p>
+</div>
+<button class="w-full py-5 rounded-2xl bg-gradient-to-r from-primary to-secondary text-white text-lg font-black shadow-lg shadow-primary/30 hover:shadow-primary/40 transition-all hover:-translate-y-0.5 active:scale-95">
+                        Finalizar Pedido Agora
+                    </button>
+<div class="flex flex-col md:flex-row gap-4 items-center justify-between pt-2">
+<div class="flex items-center gap-3">
+<div class="flex -space-x-3">
+<img alt="User 1" class="w-8 h-8 rounded-full border-2 border-white object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8J57WS-DDZRGCvEFegKxlgX3fFEZhcvg7cIt2M1c6z35qNKFnvAJ_YTJvYNRhtagAeuDTTbcT_kTZq3zRi-UspNDcypdc9P9dp85YVKowE3rHdCDbQcy3jvMKaCbxiveTg8yhErMp1o-eiNcQVSAWqmiMi_kruC4OFblWKVEiJ5TGP-diSQWTiegrnLtGTYeXKTBkI9GrKefUqwWkbSW5jjzAwQQ4sEh2AxuWt8-MBDxLc7B7SooLdPg-sz-agSXtrUugnOzyF4Qn"/>
+<div class="w-8 h-8 rounded-full border-2 border-white bg-tertiary-container flex items-center justify-center text-[8px] font-bold text-on-tertiary-container">+50k</div>
+</div>
+<span class="text-xs font-semibold">Clientes satisfeitos</span>
+</div>
+<div class="flex items-center gap-2 text-primary/70">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="text-xs font-bold uppercase tracking-wider">Pagamento Criptografado</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust Features -->
+<section class="py-20 px-6">
+<div class="max-w-7xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+<div class="text-center md:text-left">
+<span class="material-symbols-outlined text-4xl text-primary mb-4">shield</span>
+<h4 class="font-bold text-lg mb-2">100% Seguro</h4>
+<p class="text-sm text-slate-500 leading-relaxed">Métodos orgânicos que respeitam os termos do Instagram.</p>
+</div>
+<div class="text-center md:text-left">
+<span class="material-symbols-outlined text-4xl text-primary mb-4">bolt</span>
+<h4 class="font-bold text-lg mb-2">Início em Minutos</h4>
+<p class="text-sm text-slate-500 leading-relaxed">O sistema processa seu pedido automaticamente após o pagamento.</p>
+</div>
+<div class="text-center md:text-left">
+<span class="material-symbols-outlined text-4xl text-primary mb-4">published_with_changes</span>
+<h4 class="font-bold text-lg mb-2">Reposição Grátis</h4>
+<p class="text-sm text-slate-500 leading-relaxed">Garantia de 30 dias para repor qualquer queda de seguidores.</p>
+</div>
+<div class="text-center md:text-left">
+<span class="material-symbols-outlined text-4xl text-primary mb-4">contact_support</span>
+<h4 class="font-bold text-lg mb-2">Atendimento Humano</h4>
+<p class="text-sm text-slate-500 leading-relaxed">Nossa equipe brasileira está pronta para te ajudar via WhatsApp.</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-slate-50 border-t border-slate-200/15 py-12 px-8">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+<div class="space-y-4">
+<div class="text-lg font-bold text-slate-900">FollowPulse</div>
+<p class="text-slate-500 text-sm leading-relaxed">A maior plataforma de marketing social do Brasil. Elevando sua presença digital com tecnologia e segurança.</p>
+</div>
+<div>
+<h5 class="font-bold mb-4 text-slate-900">Links Rápidos</h5>
+<ul class="space-y-2">
+<li><a class="text-slate-500 hover:text-blue-500 text-sm transition-transform hover:translate-x-1 inline-block" href="#">Termos de Serviço</a></li>
+<li><a class="text-slate-500 hover:text-blue-500 text-sm transition-transform hover:translate-x-1 inline-block" href="#">Política de Privacidade</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-bold mb-4 text-slate-900">Ajuda</h5>
+<ul class="space-y-2">
+<li><a class="text-slate-500 hover:text-blue-500 text-sm transition-transform hover:translate-x-1 inline-block" href="#">Contact Support</a></li>
+<li><a class="text-slate-500 hover:text-blue-500 text-sm transition-transform hover:translate-x-1 inline-block" href="#">Trust Center</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-bold mb-4 text-slate-900">Newsletter</h5>
+<p class="text-sm text-slate-500 mb-4">Receba dicas de crescimento.</p>
+<div class="flex gap-2">
+<input class="bg-white border-none rounded-lg px-4 py-2 text-sm w-full outline-none focus:ring-2 focus:ring-primary/20" placeholder="Seu e-mail" type="email"/>
+<button class="bg-primary text-white p-2 rounded-lg material-symbols-outlined">send</button>
+</div>
+</div>
+</div>
+<div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-slate-200/50 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-sm text-slate-500">© 2024 FollowPulse Media. All rights reserved.</p>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-slate-400 cursor-pointer hover:text-primary transition-colors">brand_awareness</span>
+<span class="material-symbols-outlined text-slate-400 cursor-pointer hover:text-primary transition-colors">diversity_3</span>
+<span class="material-symbols-outlined text-slate-400 cursor-pointer hover:text-primary transition-colors">public</span>
+</div>
+</div>
+</footer>
+<button class="fixed bottom-6 right-6 w-16 h-16 bg-[#25D366] text-white rounded-full shadow-2xl flex items-center justify-center z-40 transition-transform active:scale-90 md:hidden">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">chat</span>
+</button>
+<script>
+    function selectPackage(element, name, price) {
+        // Remove selection from all cards
+        document.querySelectorAll('.package-card').forEach(card => {
+            card.classList.remove('selected');
+            const badge = card.querySelector('.check-badge');
+            badge.classList.add('hidden');
+            badge.classList.remove('flex');
+            
+            const iconCont = card.querySelector('.icon-container');
+            const iconSpan = iconCont.querySelector('span');
+
+            // Reset icons for non-popular items
+            if (!card.innerHTML.includes('Mais Popular')) {
+                iconCont.classList.add('bg-primary/5');
+                iconCont.classList.remove('bg-gradient-to-br', 'from-primary', 'to-secondary', 'text-white');
+                iconSpan.classList.add('text-primary');
+                iconSpan.classList.remove('text-white');
+            } else {
+                // If it is the popular card, we keep its default styling unless it was changed by some logic
+                // But selected state overrides it anyway
+            }
+        });
+
+        // Add selection to clicked card
+        element.classList.add('selected');
+        const badge = element.querySelector('.check-badge');
+        badge.classList.remove('hidden');
+        badge.classList.add('flex');
+
+        // Apply visual icon state for selection
+        const iconCont = element.querySelector('.icon-container');
+        const iconSpan = iconCont.querySelector('span');
+        
+        iconCont.classList.remove('bg-primary/5');
+        iconCont.classList.add('bg-gradient-to-br', 'from-primary', 'to-secondary');
+        iconSpan.classList.remove('text-primary');
+        iconSpan.classList.add('text-white');
+
+        // Update form info
+        document.getElementById('selected-plan-text').innerText = name;
+        document.getElementById('selected-price-text').innerText = price;
+
+        // Smooth scroll to form on mobile
+        if (window.innerWidth < 768) {
+            document.querySelector('.max-w-2xl').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+</script>
+</body></html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FollowPulse - Acompanhar Pedido</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "tertiary-container": "#61c2ff",
+                "inverse-surface": "#070d20",
+                "surface-container-low": "#f2f3ff",
+                "tertiary": "#006592",
+                "outline-variant": "#a4b1de",
+                "secondary-container": "#eaddff",
+                "surface-container-high": "#e3e7ff",
+                "surface-variant": "#dbe1ff",
+                "outline": "#6d79a4",
+                "on-tertiary-container": "#003b56",
+                "primary": "#0053dc",
+                "surface": "#faf8ff",
+                "secondary-fixed-dim": "#deccff",
+                "on-error": "#fff7f6",
+                "on-background": "#243156",
+                "on-surface-variant": "#515e86",
+                "inverse-on-surface": "#969cb5",
+                "primary-dim": "#0049c2",
+                "surface-container-highest": "#dbe1ff",
+                "surface-container-lowest": "#ffffff",
+                "on-secondary-fixed-variant": "#702ae1",
+                "on-error-container": "#65000b",
+                "on-tertiary-fixed-variant": "#004463",
+                "surface-bright": "#faf8ff",
+                "secondary-fixed": "#eaddff",
+                "on-primary-fixed-variant": "#003ca5",
+                "surface-tint": "#0053dc",
+                "on-tertiary-fixed": "#002336",
+                "primary-container": "#acbfff",
+                "on-surface": "#243156",
+                "secondary": "#742fe5",
+                "primary-fixed-dim": "#98b1ff",
+                "on-primary-fixed": "#002265",
+                "surface-dim": "#cfd9ff",
+                "on-tertiary": "#f5f9ff",
+                "tertiary-dim": "#005980",
+                "background": "#faf8ff",
+                "on-primary": "#faf8ff",
+                "error-container": "#f56965",
+                "on-secondary": "#fdf7ff",
+                "secondary-dim": "#681ad9",
+                "error-dim": "#70030f",
+                "tertiary-fixed": "#61c2ff",
+                "inverse-primary": "#618bff",
+                "error": "#ac3434",
+                "tertiary-fixed-dim": "#34b5fa",
+                "on-primary-container": "#003592",
+                "on-secondary-fixed": "#5100b3",
+                "primary-fixed": "#acbfff",
+                "surface-container": "#ebedff",
+                "on-secondary-container": "#6617d7"
+            },
+            "borderRadius": {
+                "DEFAULT": "8px",
+                "lg": "12px",
+                "xl": "16px",
+                "full": "9999px"
+            },
+            "fontFamily": {
+                "headline": ["Manrope"],
+                "body": ["Plus Jakarta Sans"],
+                "label": ["Plus Jakarta Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-slate-50/70 backdrop-blur-xl flex items-center justify-between px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<button class="text-blue-600 hover:bg-blue-50 transition-colors p-2 rounded-lg active:scale-95 duration-200">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-manrope font-bold tracking-tight text-xl text-on-background">Detalhes do Pedido</h1>
+</div>
+<div class="text-xl font-extrabold text-blue-700">FollowPulse</div>
+</header>
+<main class="pt-24 px-6 max-w-2xl mx-auto space-y-12">
+<!-- Search Section -->
+<section class="space-y-6">
+<div class="text-center space-y-2">
+<h2 class="text-3xl font-extrabold tracking-tight text-on-background">Acompanhar Pedido</h2>
+<p class="text-on-surface-variant max-w-sm mx-auto">Insira o seu @ do Instagram para verificar o status em tempo real.</p>
+</div>
+<div class="bg-surface-container-low p-1 rounded-xl">
+<div class="bg-surface-container-lowest p-6 rounded-lg space-y-6">
+<div class="relative">
+<label class="block text-sm font-semibold mb-2 text-on-surface">Nome de Usuário</label>
+<div class="relative group">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-primary font-bold">@</span>
+<input class="w-full bg-surface-container-high border-none rounded-lg py-4 pl-10 pr-4 focus:ring-2 focus:ring-primary/40 transition-all text-on-background placeholder:text-outline" placeholder="seu.perfil" type="text"/>
+</div>
+</div>
+<button class="w-full bg-gradient-to-r from-primary to-secondary text-on-primary font-bold py-4 rounded-full flex items-center justify-center gap-2 shadow-[0px_12px_32px_rgba(36,49,86,0.06)] hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined">analytics</span>
+                        Consultar Status
+                    </button>
+</div>
+</div>
+</section>
+<!-- Status Result Section (Active Mockup) -->
+<section class="space-y-6">
+<div class="flex items-center gap-2 px-2">
+<span class="material-symbols-outlined text-primary" data-weight="fill" style="font-variation-settings: 'FILL' 1;">history</span>
+<h3 class="font-bold text-lg">Consulta Recente</h3>
+</div>
+<!-- Bento Status Card -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="md:col-span-3 bg-surface-container-lowest rounded-xl p-8 relative overflow-hidden group">
+<!-- Decorative Background Element -->
+<div class="absolute -right-12 -top-12 w-48 h-48 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors"></div>
+<div class="relative z-10 space-y-8">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div class="flex items-center gap-5">
+<div class="w-16 h-16 rounded-full overflow-hidden border-2 border-primary-container p-0.5">
+<img class="w-full h-full object-cover rounded-full" data-alt="minimalist close-up of a person profile avatar style with soft natural lighting and clean background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoBfpQNxH7tVVZGZsGMkrkL8pUsxi0VqjBEKm96s6ZQzOm3fW5E4GvcZ0NMerbFYEvW_Y1vZsQGAU0NJyboa52aSGizhrMBcUfUCIRctJlkrt8sAcmdQcZnQ02Td__SZc6T7cYl53a4cmapeUa8y_QCXhZan6CqiVCeraJUW0Uyn--kyL3odJ3lpX-bmMFW9dc0a9nPP9UCzM8GShi9r3HN8iM0a8CNaUV5h0jX2jsXSdJScIgupkMZwxMuLLDpHm9SIvrydGisUSn"/>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h4 class="font-bold text-xl text-on-background">@usuario_premium</h4>
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<p class="text-on-surface-variant font-medium">Pedido #FP-84920</p>
+</div>
+</div>
+<div class="bg-secondary-container px-4 py-2 rounded-full inline-flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="text-on-secondary-container text-xs font-bold uppercase tracking-widest">Entregando</span>
+</div>
+</div>
+<!-- Product Detail -->
+<div class="bg-surface-container-low p-6 rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
+</div>
+<div>
+<p class="text-xs font-bold text-outline uppercase tracking-tighter">Produto</p>
+<p class="font-bold text-on-background">2.500 Seguidores Internacionais</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold text-outline uppercase tracking-tighter">Conclusão Est.</p>
+<p class="font-bold text-on-background">~2h restantes</p>
+</div>
+</div>
+<!-- Progress Bar Section -->
+<div class="space-y-3">
+<div class="flex justify-between items-end">
+<span class="text-sm font-bold text-on-surface">Progresso da Entrega</span>
+<span class="text-2xl font-black text-primary">72%</span>
+</div>
+<div class="w-full h-3 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-secondary w-[72%] rounded-full shadow-[0px_0px_12px_rgba(0,83,220,0.3)]"></div>
+</div>
+<div class="flex justify-between text-[10px] font-bold text-outline-variant uppercase tracking-widest">
+<span>Início: 1,420</span>
+<span>Atual: 3,220</span>
+<span>Meta: 3,920</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Feature Highlight -->
+<div class="bg-tertiary-container/20 rounded-xl p-6 md:col-span-1 border border-tertiary-container/10">
+<span class="material-symbols-outlined text-tertiary mb-3">speed</span>
+<h5 class="font-bold text-tertiary">Velocidade Pulse</h5>
+<p class="text-sm text-on-tertiary-container leading-relaxed">Sua entrega está sendo processada em servidores de alta prioridade.</p>
+</div>
+<div class="bg-secondary-container/20 rounded-xl p-6 md:col-span-1 border border-secondary-container/10">
+<span class="material-symbols-outlined text-secondary-dim mb-3">shield</span>
+<h5 class="font-bold text-secondary-dim">Proteção Drop</h5>
+<p class="text-sm text-on-secondary-container leading-relaxed">Garantia de reposição automática ativa para este pedido por 30 dias.</p>
+</div>
+<div class="bg-primary-container/20 rounded-xl p-6 md:col-span-1 border border-primary-container/10">
+<span class="material-symbols-outlined text-primary mb-3">support_agent</span>
+<h5 class="font-bold text-primary">Suporte 24/7</h5>
+<p class="text-sm text-on-primary-container leading-relaxed">Dúvidas sobre sua entrega? Nossa equipe está disponível no chat.</p>
+</div>
+</div>
+</section>
+<!-- Trust Element: Asymmetrical Content -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center py-12">
+<div class="md:col-span-7 space-y-4">
+<h3 class="text-2xl font-bold text-on-background">Tecnologia que impulsiona sua influência</h3>
+<p class="text-on-surface-variant leading-relaxed">
+                    O FollowPulse utiliza algoritmos de distribuição orgânica para garantir que cada seguidor ou interação pareça natural. Nosso sistema monitora seu perfil em tempo real para ajustar a velocidade de entrega.
+                </p>
+<div class="pt-4 flex gap-6">
+<div>
+<p class="text-2xl font-black text-primary">150k+</p>
+<p class="text-xs font-bold text-outline uppercase">Pedidos Entregues</p>
+</div>
+<div>
+<p class="text-2xl font-black text-secondary">99.8%</p>
+<p class="text-xs font-bold text-outline uppercase">Taxa de Sucesso</p>
+</div>
+</div>
+</div>
+<div class="md:col-span-5 relative">
+<div class="aspect-square bg-surface-dim rounded-2xl overflow-hidden shadow-xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
+<img class="w-full h-full object-cover" data-alt="abstract digital art showing glowing blue data streams and futuristic network connection patterns" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4hEopFx5CQDMYIBvZ6B0i0nQrUG1sjTZ6ADRYPrqQNPeQp9MtY8JCk9MfC-gk1_6M7-v_fSbqZnYt5UaZPHWNKOya3y6L3WRaBi4vsS_afBoaR7WJpWEzXM-EDoTLaG9jRzOurwrXBLmKaA5_gWArtmFKLHYZwrTs-wqQC5UXzYQ7omWISquB4kbdNKCXLhrRmjoPq-VPoLc4uzMcMqmiTv7U23frSBimF1xbL1NqlyEKzioz_mCLC31uvEcHwM0ynSaMSwYjbpBB"/>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-white/70 backdrop-blur-xl border-t border-blue-100/10 shadow-[0px_-12px_32px_rgba(36,49,86,0.06)] z-50 rounded-t-2xl">
+<a class="flex flex-col items-center justify-center text-slate-500 px-5 py-2 hover:text-blue-600 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-plus-jakarta font-semibold text-[10px] uppercase tracking-wider">Início</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 px-5 py-2 hover:text-blue-600 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">rebase_edit</span>
+<span class="font-plus-jakarta font-semibold text-[10px] uppercase tracking-wider">Serviços</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-blue-100 text-blue-700 rounded-full px-5 py-2 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-plus-jakarta font-semibold text-[10px] uppercase tracking-wider">Pedidos</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 px-5 py-2 hover:text-blue-600 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-plus-jakarta font-semibold text-[10px] uppercase tracking-wider">Perfil</span>
+</a>
+</nav>
+</body></html>

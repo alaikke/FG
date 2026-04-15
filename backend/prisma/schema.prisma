@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Order {
+  id               String   @id @default(uuid())
+  clientName       String
+  clientEmail      String
+  clientPhone      String
+  instagramUser    String
+  followersCount   Int      // Pacote comprado (ex: 2500)
+  price            Float    // Preço cobrado (ex: 87.00)
+  
+  // PoloPag Integrations
+  paymentStatus    String   @default("PENDING") // PENDING, PAID, CANCELLED
+  txid             String?  @unique             // ID PIX interno pra bater com webhook
+  qrCode           String?
+  qrCodeBase64     String?
+  
+  // Instagram profile cache (evita re-fetch da API)
+  profilePicUrl    String?
+  currentFollowers String?  // Seguidores atuais no momento da compra
+  
+  // BaratoSociais Integration
+  providerOrderId  String?  // ID retornado do provedor
+  deliveryStatus   String   @default("WAITING_PAYMENT") // WAITING_PAYMENT, IN_PROGRESS, COMPLETED, ERROR
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Product {
+  id          String  @id @default(uuid())
+  sortOrder   Int     @default(0)
+  followers   String            // "100", "1.000", "5.000"
+  subtitle    String            // "Seguidores Reais"
+  price       String            // "9,90"
+  icon        String  @default("person")
+  tag         String?           // "Mais Popular" ou null
+  features    String  @default("[]") // JSON array: ["Sem senha","Entrega Rápida"]
+  active      Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SiteSettings {
+  id              String  @id @default("main")
+  googleTagId     String?  // GTM-XXXXX ou G-XXXXX
+  metaPixelId     String?  // Meta/Facebook Pixel ID
+  logoUrl         String?  // URL ou base64 da logo
+  adminPassword   String  @default("admin123")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}

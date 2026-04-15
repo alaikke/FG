@@ -1,0 +1,112 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@theme {
+  --color-on-primary-fixed: #002265;
+  --color-surface-container-highest: #dbe1ff;
+  --color-background: #faf8ff;
+  --color-tertiary-fixed: #61c2ff;
+  --color-surface: #faf8ff;
+  --color-secondary-dim: #681ad9;
+  --color-surface-bright: #faf8ff;
+  --color-on-tertiary-fixed-variant: #004463;
+  --color-surface-tint: #0053dc;
+  --color-tertiary-container: #61c2ff;
+  --color-on-secondary-fixed-variant: #702ae1;
+  --color-secondary: #742fe5;
+  --color-on-primary-fixed-variant: #003ca5;
+  --color-tertiary-fixed-dim: #34b5fa;
+  --color-on-error-container: #65000b;
+  --color-primary-fixed: #acbfff;
+  --color-surface-container: #ebedff;
+  --color-on-secondary: #fdf7ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-secondary-fixed-dim: #deccff;
+  --color-on-error: #fff7f6;
+  --color-surface-container-high: #e3e7ff;
+  --color-inverse-primary: #618bff;
+  --color-on-background: #243156;
+  --color-secondary-fixed: #eaddff;
+  --color-surface-dim: #cfd9ff;
+  --color-inverse-surface: #070d20;
+  --color-on-surface: #243156;
+  --color-outline-variant: #a4b1de;
+  --color-surface-variant: #dbe1ff;
+  --color-on-primary: #faf8ff;
+  --color-on-tertiary: #f5f9ff;
+  --color-primary-dim: #0049c2;
+  --color-on-primary-container: #003592;
+  --color-error: #ac3434;
+  --color-tertiary-dim: #005980;
+  --color-surface-container-low: #f2f3ff;
+  --color-error-dim: #70030f;
+  --color-on-secondary-fixed: #5100b3;
+  --color-primary-fixed-dim: #98b1ff;
+  --color-on-surface-variant: #515e86;
+  --color-outline: #6d79a4;
+  --color-error-container: #f56965;
+  --color-inverse-on-surface: #969cb5;
+  --color-primary-container: #acbfff;
+  --color-tertiary: #006592;
+  --color-secondary-container: #eaddff;
+  --color-on-tertiary-fixed: #002336;
+  --color-primary: #0053dc;
+  --color-on-tertiary-container: #003b56;
+  --color-on-secondary-container: #6617d7;
+
+  --font-headline: "Manrope", sans-serif;
+  --font-body: "Plus Jakarta Sans", sans-serif;
+  --font-label: "Plus Jakarta Sans", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-on-background font-body;
+    min-height: max(884px, 100dvh);
+  }
+
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+}
+
+@layer components {
+  .tonal-shift { background-color: var(--color-surface-container-low); }
+  
+  .glass-nav {
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+}
+
+@layer utilities {
+  .bg-primary\/5 { background-color: color-mix(in srgb, var(--color-primary) 5%, transparent); }
+  .bg-primary\/10 { background-color: color-mix(in srgb, var(--color-primary) 10%, transparent); }
+  .bg-primary\/20 { background-color: color-mix(in srgb, var(--color-primary) 20%, transparent); }
+  .border-primary\/20 { border-color: color-mix(in srgb, var(--color-primary) 20%, transparent); }
+  .text-primary\/70 { color: color-mix(in srgb, var(--color-primary) 70%, transparent); }
+  .shadow-primary\/5 { box-shadow: 0 4px 6px -1px color-mix(in srgb, var(--color-primary) 5%, transparent), 0 2px 4px -1px color-mix(in srgb, var(--color-primary) 5%, transparent); }
+  .shadow-primary\/30 { box-shadow: 0 10px 15px -3px color-mix(in srgb, var(--color-primary) 30%, transparent), 0 4px 6px -2px color-mix(in srgb, var(--color-primary) 30%, transparent); }
+  .hover\:shadow-primary\/40:hover { box-shadow: 0 10px 15px -3px color-mix(in srgb, var(--color-primary) 40%, transparent), 0 4px 6px -2px color-mix(in srgb, var(--color-primary) 40%, transparent); }
+}
+
+@layer utilities {
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-10px) rotate(5deg); }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}

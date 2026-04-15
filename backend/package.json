@@ -1,0 +1,26 @@
+{
+  "name": "fastgram-backend",
+  "version": "1.0.0",
+  "description": "FastGram API",
+  "main": "src/server.ts",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "db:push": "prisma db push"
+  },
+  "dependencies": {
+    "@fastify/cors": "^9.0.1",
+    "@prisma/client": "^5.10.2",
+    "axios": "^1.6.7",
+    "dotenv": "^16.4.5",
+    "fastify": "^4.26.2",
+    "stripe": "^22.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "prisma": "^5.10.2",
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3"
+  }
+}

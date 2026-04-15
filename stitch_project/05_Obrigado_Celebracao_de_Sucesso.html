@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FollowPulse - Pedido Realizado</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+        .status-pulse::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: currentColor;
+            border-radius: inherit;
+            animation: pulse-ring 1.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+        }
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-container": "#eaddff",
+                        "outline-variant": "#a4b1de",
+                        "tertiary-fixed": "#61c2ff",
+                        "inverse-surface": "#070d20",
+                        "surface": "#faf8ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#fdf7ff",
+                        "on-tertiary-fixed": "#002336",
+                        "surface-tint": "#0053dc",
+                        "surface-dim": "#cfd9ff",
+                        "inverse-primary": "#618bff",
+                        "primary-dim": "#0049c2",
+                        "on-tertiary-fixed-variant": "#004463",
+                        "on-primary-fixed": "#002265",
+                        "primary-container": "#acbfff",
+                        "outline": "#6d79a4",
+                        "on-surface": "#243156",
+                        "on-background": "#243156",
+                        "surface-bright": "#faf8ff",
+                        "on-tertiary": "#f5f9ff",
+                        "tertiary-fixed-dim": "#34b5fa",
+                        "on-primary": "#faf8ff",
+                        "inverse-on-surface": "#969cb5",
+                        "tertiary-dim": "#005980",
+                        "secondary-fixed": "#eaddff",
+                        "on-surface-variant": "#515e86",
+                        "primary-fixed": "#acbfff",
+                        "on-primary-fixed-variant": "#003ca5",
+                        "background": "#faf8ff",
+                        "on-error": "#fff7f6",
+                        "surface-container-high": "#e3e7ff",
+                        "primary-fixed-dim": "#98b1ff",
+                        "on-secondary-container": "#6617d7",
+                        "tertiary-container": "#61c2ff",
+                        "surface-container-highest": "#dbe1ff",
+                        "on-tertiary-container": "#003b56",
+                        "secondary-fixed-dim": "#deccff",
+                        "on-secondary-fixed": "#5100b3",
+                        "secondary": "#742fe5",
+                        "error": "#ac3434",
+                        "surface-container-low": "#f2f3ff",
+                        "surface-variant": "#dbe1ff",
+                        "error-container": "#f56965",
+                        "surface-container": "#ebedff",
+                        "tertiary": "#006592",
+                        "primary": "#0053dc",
+                        "on-primary-container": "#003592",
+                        "error-dim": "#70030f",
+                        "on-secondary-fixed-variant": "#702ae1",
+                        "secondary-dim": "#681ad9",
+                        "on-error-container": "#65000b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Plus Jakarta Sans"],
+                        "label": ["Plus Jakarta Sans"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#faf8ff]/70 backdrop-blur-xl border-b border-surface-container">
+<div class="flex items-center justify-between px-6 py-4 w-full max-w-7xl mx-auto">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="celebration">celebration</span>
+<span class="text-xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary font-headline tracking-tight">FollowPulse</span>
+</div>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="text-on-surface-variant font-semibold hover:text-primary transition-colors" href="#">Serviços</a>
+<a class="text-on-surface-variant font-semibold hover:text-primary transition-colors" href="#">Meus Pedidos</a>
+</nav>
+</div>
+</header>
+<main class="flex-grow flex items-center justify-center px-4 pt-24 pb-12 overflow-hidden">
+<!-- Visual Background Accents -->
+<div class="absolute inset-0 pointer-events-none -z-10 overflow-hidden">
+<div class="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-[80px]"></div>
+<div class="absolute top-1/2 -right-48 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[100px]"></div>
+<div class="absolute bottom-0 left-1/4 w-64 h-64 bg-tertiary-container/20 rounded-full blur-[80px]"></div>
+</div>
+<div class="max-w-2xl w-full">
+<!-- Success Card Container -->
+<div class="bg-surface-container-lowest rounded-[2.5rem] p-8 md:p-14 text-center shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] relative overflow-hidden border border-white/50">
+<!-- Celebration Visuals -->
+<div class="absolute inset-0 pointer-events-none opacity-40">
+<div class="confetti bg-primary top-10 left-10 animate-float" style="animation-delay: 0.1s"></div>
+<div class="confetti bg-secondary top-20 right-12 animate-float" style="animation-delay: 0.5s"></div>
+<div class="confetti bg-tertiary top-40 left-24 animate-float" style="animation-delay: 1.2s"></div>
+<div class="confetti bg-primary-container bottom-20 right-20 animate-float" style="animation-delay: 0.8s"></div>
+</div>
+<!-- Success Icon Group -->
+<div class="relative mb-10 flex justify-center">
+<div class="relative">
+<div class="w-28 h-28 bg-gradient-to-tr from-primary to-secondary rounded-full flex items-center justify-center relative z-10 shadow-xl shadow-primary/20">
+<span class="material-symbols-outlined text-white text-6xl" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<!-- Floating Badges -->
+<div class="absolute -top-4 -right-4 bg-white p-2.5 rounded-2xl shadow-lg z-20 animate-float">
+<span class="material-symbols-outlined text-secondary text-2xl" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div class="absolute -bottom-2 -left-4 bg-white p-2 rounded-2xl shadow-lg z-20 animate-float" style="animation-delay: 1.5s">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="rocket_launch" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+</div>
+</div>
+</div>
+<!-- Main Message -->
+<h1 class="font-headline font-black text-4xl md:text-5xl tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-br from-on-surface via-primary to-secondary">
+                    Pedido Realizado com Sucesso!
+                </h1>
+<p class="text-on-surface-variant text-lg max-w-md mx-auto mb-10 font-medium">
+                    Prepare-se para crescer. Sua jornada começou e você notará os resultados em breve.
+                </p>
+<!-- Premium Order Summary Card -->
+<div class="bg-surface-container-low rounded-3xl p-6 mb-8 text-left border border-outline-variant/10 relative group">
+<div class="flex flex-col sm:flex-row items-center gap-6">
+<div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-white to-surface-container-high flex items-center justify-center shadow-inner shrink-0">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="person_add" style="font-variation-settings: 'FILL' 1;">person_add</span>
+</div>
+<div class="flex-grow text-center sm:text-left">
+<p class="text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary/70 mb-1">Confirmação de Item</p>
+<h2 class="text-2xl font-headline font-extrabold text-on-surface leading-none mb-2">2.500 Seguidores Premium</h2>
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container-highest rounded-lg text-on-surface-variant">
+<span class="material-symbols-outlined text-base" data-icon="alternate_email">alternate_email</span>
+<span class="font-bold text-sm">@username</span>
+</div>
+</div>
+</div>
+<!-- Enhanced Live Status Badge -->
+<div class="mt-6 pt-6 border-t border-outline-variant/5 flex items-center justify-between">
+<span class="text-xs font-bold text-on-surface-variant/60 uppercase tracking-widest">Estado atual</span>
+<div class="flex items-center gap-2 px-4 py-1.5 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+</span>
+                            Status: Em Fila de Entrega
+                        </div>
+</div>
+</div>
+<!-- Info Banner -->
+<div class="bg-primary/5 rounded-2xl p-5 mb-10 flex gap-4 text-left border border-primary/10">
+<span class="material-symbols-outlined text-primary shrink-0" data-icon="lightbulb">lightbulb</span>
+<p class="text-on-surface-variant text-sm leading-snug">
+<strong>Dica:</strong> Mantenha seu perfil <span class="text-primary font-bold">público</span> até a conclusão total para garantir a entrega de todos os seguidores.
+                    </p>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col gap-4">
+<a class="w-full py-5 bg-gradient-to-r from-primary to-secondary text-white rounded-2xl font-extrabold shadow-[0_12px_24px_-8px_rgba(0,83,220,0.4)] hover:shadow-[0_16px_32px_-8px_rgba(0,83,220,0.5)] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-3 text-lg" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+                        Acompanhar Pedido
+                    </a>
+<a class="w-full py-5 bg-surface-container-high text-on-surface font-bold rounded-2xl hover:bg-surface-container-highest active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2" href="#">
+<span class="material-symbols-outlined" data-icon="home_app_logo">home_app_logo</span>
+                        Voltar ao Início
+                    </a>
+</div>
+<!-- Integrated Support Section -->
+<div class="mt-12 pt-8 border-t border-outline-variant/10">
+<div class="flex flex-col items-center gap-3">
+<div class="flex -space-x-2.5 mb-1">
+<img alt="Suporte 1" class="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARgzXV5ChG0GOS3fe-qwYLX9uuhcAWU8miy_MrHWhVMcr9kwDES42cgB5Q96P3e08_EbHSNq8MtJDAanxvqL9bNkYVnnAQp4OxYf3ZCEkW90QH1rk0wqy2akaoARF6BV9IFrPDFc9kulc1Mh_sJBLlJhoMEc_MbzySQw2IG5j5dXT9apcV2_YzbLhwtfYbWROpS9I07RXpfeUPS1-8_j3p6Hg9qOCJ8wsz0dV1b84xGSTvC6vTAn4JLvBh6jB_6OeQVteg-HY9eF5y"/>
+<img alt="Suporte 2" class="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkrBK6HVXMO_6QiieaAZ1L4YfSAcD4cWoRZxS2TdG0_rf6QRBWb0I9lsQvBCOgJHk0MmQp5pPMMhbObjI-cS8S8FxFSMGwSO_Rjcb0s2q7frOsDO406PqRn4qwdV0L88HtRW_ZX1eW7VZFOVeFI25oFelQMf4rFC2My2ONGR0GW9hvGQKwvfgdwexwWwmEBrTDjd1X4RI8i2hShFze2_QcM9BVm1NS2taolybFnyV2_ynguUq-sXpCbNsfUJc3LdNHvATkca4-Gd78"/>
+</div>
+<p class="text-sm font-semibold text-on-surface-variant">Dúvidas? Nosso time está online</p>
+<a class="flex items-center gap-2 text-primary font-extrabold px-6 py-2 rounded-full border border-primary/20 hover:bg-primary/5 transition-all" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="chat">chat</span>
+                            Falar no WhatsApp
+                        </a>
+</div>
+</div>
+</div>
+<!-- Seamless Trust Badges -->
+<div class="flex flex-wrap justify-center items-center gap-x-12 gap-y-6 mt-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="verified_user">verified_user</span>
+<span class="text-[10px] font-bold uppercase tracking-[0.2em]">Pagamento Seguro</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="lock">lock</span>
+<span class="text-[10px] font-bold uppercase tracking-[0.2em]">100% Privado</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="bolt">bolt</span>
+<span class="text-[10px] font-bold uppercase tracking-[0.2em]">Entrega Turbo</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 px-8 bg-surface-container-low/50 border-t border-surface-container">
+<div class="flex flex-col md:flex-row justify-between items-center gap-6 max-w-7xl mx-auto">
+<div class="flex flex-col gap-1 items-center md:items-start">
+<span class="font-bold text-primary font-headline text-lg">FollowPulse</span>
+<p class="text-xs text-on-surface-variant font-medium">© 2024 The Fluid Architect. Todos os direitos reservados.</p>
+</div>
+<div class="flex gap-8 items-center">
+<a class="text-xs font-bold text-on-surface-variant hover:text-primary transition-colors uppercase tracking-wider" href="#">Suporte</a>
+<a class="text-xs font-bold text-on-surface-variant hover:text-primary transition-colors uppercase tracking-wider" href="#">Privacidade</a>
+<a class="text-xs font-bold text-on-surface-variant hover:text-primary transition-colors uppercase tracking-wider" href="#">Termos</a>
+</div>
+</div>
+</footer>
+</body></html>
