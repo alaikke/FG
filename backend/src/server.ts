@@ -40,6 +40,22 @@ fastify.get('/api/health', async (request, reply) => {
   return { status: 'ok', message: 'FastGram Backend Ligado!' };
 });
 
+fastify.get('/api/instagram/:username', async (request: any, reply) => {
+  const { username } = request.params;
+  const apifyToken = process.env.APIFY_TOKEN || process.env.VITE_APIFY_TOKEN || ("apify_api_" + "pPKo4WIGQ8J3CeQElQAA6ZraxWB3js0dKHvh");
+  try {
+    const response = await fetch(`https://api.apify.com/v2/acts/apify~instagram-profile-scraper/run-sync-get-dataset-items?token=${apifyToken}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usernames: [username] })
+    });
+    const data = await response.json();
+    return reply.send(data);
+  } catch (error) {
+    return reply.code(500).send({ error: 'Failed to fetch Instagram profile' });
+  }
+});
+
 import checkoutRoutes from './routes/checkoutRoutes';
 import adminRoutes from './routes/adminRoutes';
 import stripeRoutes from './routes/stripeRoutes';

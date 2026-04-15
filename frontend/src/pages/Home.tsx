@@ -47,16 +47,9 @@ export const Home: React.FC = () => {
           let realFollowers = `${randomStr}k`;
           let realAvatar = `https://ui-avatars.com/api/?name=${username}&background=random&color=fff&size=128&bold=true`;
 
-          const apifyToken = import.meta.env.VITE_APIFY_TOKEN;
-
-          if (apifyToken) {
-            // Chamada Oficial via Apify API
-            const response = await fetch(`https://api.apify.com/v2/acts/apify~instagram-profile-scraper/run-sync-get-dataset-items?token=${apifyToken}`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ usernames: [username] })
-            });
-            
+          const response = await fetch(`${API_BASE}/api/instagram/${username}`);
+          
+          if (response.ok) {
             const data = await response.json();
             
             if (data && data.length > 0) {
