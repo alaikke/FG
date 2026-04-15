@@ -14,7 +14,32 @@ export const PixelTracker: React.FC = () => {
     fetch(`${API_BASE}/api/settings/public`)
       .then(r => r.json())
       .then(data => {
-        // A Tag do Google agora está fixada diretamente no index.html para o Google Ads detectar na hora.        // Meta Pixel
+        // Google Tag (gtag.js)
+        if (data.googleTagId) {
+          const tags = data.googleTagId.split(',').map((t: string) => t.trim()).filter(Boolean);
+          if (tags.length > 0) {
+            const primaryId = tags[0];
+            const script = document.createElement('script');
+            script.src = `https://www.googletagmanager.com/gtag/js?id=${primaryId}`;
+            script.async = true;
+            document.head.appendChild(script);
+
+            const inlineScript = document.createElement('script');
+            let configCalls = tags.map((id: string) => `gtag('config', '${id}');`).join('\n            ');
+            inlineScript.innerHTML = `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              ${configCalls}
+            `;
+            document.head.appendChild(inlineScript);
+            
+            // Salva na window para usarmos nos page_views depois
+            (window as any)._activeGtms = tags;
+          }
+        }
+
+        // Meta Pixel
         if (data.metaPixelId) {
           const pixelId = data.metaPixelId.trim();
           const metaScript = document.createElement('script');
@@ -35,13 +60,23 @@ export const PixelTracker: React.FC = () => {
 
   // Track page views on route changes
   useEffect(() => {
+    const url = location.pathname + location.search;
+
     if (typeof window !== 'undefined' && (window as any).fbq) {
       (window as any).fbq('track', 'PageView');
     }
-    if (typeof window !== 'undefined' && (window as any).dataLayer) {
+
+    if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function' && (window as any)._activeGtms) {
+      (window as any)._activeGtms.forEach((id: string) => {
+        (window as any).gtag('config', id, {
+          page_path: url,
+        });
+      });
+    } else if (typeof window !== 'undefined' && (window as any).dataLayer) {
+      // Fallback para GTM clássico
       (window as any).dataLayer.push({
         event: 'pageview',
-        page: location.pathname + location.search,
+        page: url,
       });
     }
   }, [location]);
