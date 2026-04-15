@@ -54,7 +54,7 @@ model SiteSettings {
   googleTagId     String?  // GTM-XXXXX ou G-XXXXX
   metaPixelId     String?  // Meta/Facebook Pixel ID
   logoUrl         String?  // URL ou base64 da logo
-  adminPassword   String  @default("admin123")
+  adminPassword   String  @default("MmoneyDin00!")
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
