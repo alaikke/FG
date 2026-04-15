@@ -10,21 +10,60 @@ interface SuccessState {
 export const Success: React.FC = () => {
   const location = useLocation();
   const state = location.state as SuccessState | null;
+  const searchParams = new URLSearchParams(location.search);
+  const paramOrderId = searchParams.get('order_id');
+  
+  const finalOrderId = state?.orderId || paramOrderId;
   const [orderData, setOrderData] = useState<any>(null);
+  const [pixelFired, setPixelFired] = useState(false);
 
   useEffect(() => {
-    if (!state?.orderId) return;
-    fetch(`${API_BASE}/api/orders/${state.orderId}`)
+    if (!finalOrderId) return;
+    fetch(`${API_BASE}/api/orders/${finalOrderId}`)
       .then(res => res.json())
       .then(data => setOrderData(data))
       .catch(() => {});
-  }, [state?.orderId]);
+  }, [finalOrderId]);
+
+  useEffect(() => {
+    if (orderData && !pixelFired) {
+      if (typeof window !== 'undefined') {
+        const priceVal = Number(orderData.price || 0);
+        
+        // Meta Pixel Purchase Event
+        if ((window as any).fbq) {
+          (window as any).fbq('track', 'Purchase', {
+            value: priceVal,
+            currency: 'BRL',
+            content_name: `${orderData.followersCount} Seguidores`,
+            content_type: 'product',
+            order_id: finalOrderId
+          });
+        }
+        
+        // Google Ads Purchase Event (GTAG)
+        if ((window as any).gtag) {
+          (window as any).gtag('event', 'purchase', {
+            transaction_id: finalOrderId,
+            value: priceVal,
+            currency: 'BRL',
+            items: [{
+              item_name: `${orderData.followersCount} Seguidores`,
+              price: priceVal,
+              quantity: 1
+            }]
+          });
+        }
+      }
+      setPixelFired(true);
+    }
+  }, [orderData, pixelFired, finalOrderId]);
 
   const followers = orderData?.followersCount
     ? Number(orderData.followersCount).toLocaleString('pt-BR')
     : state?.package?.followers || '—';
   const username = orderData?.instagramUser || '—';
-  const orderId = state?.orderId ? state.orderId.substring(0, 8).toUpperCase() : '—';
+  const displayOrderId = finalOrderId ? finalOrderId.substring(0, 8).toUpperCase() : '—';
   const price = orderData?.price
     ? `R$ ${Number(orderData.price).toFixed(2).replace('.', ',')}`
     : state?.package?.price
@@ -103,7 +142,7 @@ export const Success: React.FC = () => {
             </div>
 
             <div className="mt-6 pt-6 border-t border-outline-variant/5 flex items-center justify-between">
-              <span className="text-xs font-bold text-on-surface-variant/60 uppercase tracking-widest">Pedido #{orderId}</span>
+              <span className="text-xs font-bold text-on-surface-variant/60 uppercase tracking-widest">Pedido #{displayOrderId}</span>
               <div className="flex items-center gap-2 px-4 py-1.5 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
