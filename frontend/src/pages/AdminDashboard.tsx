@@ -61,8 +61,10 @@ const LoginScreen: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
 const OrdersTab: React.FC = () => {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expandedLog, setExpandedLog] = useState<string | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [retrying, setRetrying] = useState<string | null>(null);
+  const [adminNotes, setAdminNotes] = useState<string>('');
+  const [savingNotes, setSavingNotes] = useState(false);
 
   const load = () => {
     authFetch(`${API}/api/admin/orders`).then(r => r.json()).then(d => { setOrders(d.orders || []); setLoading(false); });
@@ -80,6 +82,7 @@ const OrdersTab: React.FC = () => {
         alert('Falha ao reenviar: ' + (data.error || 'Erro desconhecido'));
       } else {
         alert('Reenviado com sucesso! SMM ID: ' + data.order.providerOrderId);
+        setSelectedOrder({ ...selectedOrder, ...data.order });
       }
       load();
     } catch {
@@ -87,6 +90,30 @@ const OrdersTab: React.FC = () => {
     } finally {
       setRetrying(null);
     }
+  };
+
+  const saveNotes = async () => {
+    if (!selectedOrder) return;
+    setSavingNotes(true);
+    try {
+      const res = await authFetch(`${API}/api/admin/orders/${selectedOrder.id}/notes`, { 
+        method: 'PUT',
+        body: JSON.stringify({ notes: adminNotes })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSelectedOrder({ ...selectedOrder, adminNotes: data.adminNotes });
+        load();
+      }
+    } catch (e) {
+      alert('Erro ao salvar nota');
+    }
+    setSavingNotes(false);
+  };
+
+  const openOrder = (o: any) => {
+    setSelectedOrder(o);
+    setAdminNotes(o.adminNotes || '');
   };
 
   const statusColor: Record<string, string> = {
@@ -106,7 +133,7 @@ const OrdersTab: React.FC = () => {
         <table className="w-full text-sm">
           <thead className="bg-slate-800/50">
             <tr className="text-slate-400 text-left text-xs uppercase tracking-wider">
-              <th className="px-4 py-3">ID / Logs</th>
+              <th className="px-4 py-3">ID</th>
               <th className="px-4 py-3">Cliente</th>
               <th className="px-4 py-3">Instagram</th>
               <th className="px-4 py-3">Pacote</th>
@@ -119,15 +146,9 @@ const OrdersTab: React.FC = () => {
           </thead>
           <tbody className="divide-y divide-slate-700/30">
             {orders.map(o => (
-              <React.Fragment key={o.id}>
-              <tr className="hover:bg-slate-800/30 transition-colors">
-                <td className="px-4 py-3 font-mono text-slate-300 text-xs flex gap-2 items-center">
+              <tr key={o.id} className="hover:bg-slate-800/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-slate-300 text-xs">
                   {o.id.substring(0, 8)}
-                  {o.providerLog && (
-                    <button onClick={() => setExpandedLog(expandedLog === o.id ? null : o.id)} className="p-1 bg-slate-700/40 hover:bg-slate-600 rounded text-blue-400 transition-colors">
-                       <span className="material-symbols-outlined text-sm" style={{ fontSize: '14px' }}>terminal</span>
-                    </button>
-                  )}
                 </td>
                 <td className="px-4 py-3">
                   <p className="text-white font-medium text-xs">{o.clientName}</p>
@@ -149,30 +170,133 @@ const OrdersTab: React.FC = () => {
                 <td className="px-4 py-3 text-slate-400 text-xs">{new Date(o.createdAt).toLocaleDateString('pt-BR')}</td>
                 <td className="px-4 py-3 text-right">
                   <button 
-                    onClick={() => handleRetry(o.id)}
-                    disabled={retrying === o.id}
-                    className="bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
+                    onClick={() => openOrder(o)}
+                    className="bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors"
                   >
-                    {retrying === o.id ? '...' : 'Refazer (SMM)'}
+                    Abrir Pedido
                   </button>
                 </td>
               </tr>
-              {expandedLog === o.id && (
-                <tr className="bg-slate-900/50">
-                  <td colSpan={9} className="px-4 py-3 border-l-4 border-blue-500">
-                    <div className="text-xs space-y-2">
-                       {o.providerError && <p className="text-red-400 font-bold mb-1">Motivo: {o.providerError}</p>}
-                       <p className="text-slate-500 mb-1">Logs API Baratosociais:</p>
-                       <pre className="bg-[#0f172a] p-3 rounded-lg text-slate-300 overflow-x-auto whitespace-pre-wrap">{o.providerLog}</pre>
-                    </div>
-                  </td>
-                </tr>
-              )}
-              </React.Fragment>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* Order Details Modal Overlay */}
+      {selectedOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0f172a]/80 backdrop-blur-sm">
+          <div className="bg-[#1e293b] w-full max-w-4xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-slate-700/50">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-slate-700/50 bg-[#1e293b]">
+              <div>
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  <span className="material-symbols-outlined text-blue-400">receipt_long</span>
+                  Detalhes do Pedido - {selectedOrder.id.substring(0,8)}
+                </h3>
+                <p className="text-slate-400 text-sm mt-1">Data: {new Date(selectedOrder.createdAt).toLocaleString('pt-BR')}</p>
+              </div>
+              <button onClick={() => setSelectedOrder(null)} className="p-2 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="flex-1 overflow-y-auto p-6 flex flex-col lg:flex-row gap-6">
+              
+              {/* Left Column: Info & Logs */}
+              <div className="flex-1 space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-slate-800/40 p-4 rounded-xl border border-slate-700/30">
+                    <span className="text-slate-500 text-xs font-bold uppercase tracking-wider block mb-1">Cliente</span>
+                    <p className="text-white font-medium">{selectedOrder.clientName}</p>
+                    <p className="text-slate-400 text-sm">{selectedOrder.clientEmail}</p>
+                    <p className="text-slate-400 text-sm">{selectedOrder.clientPhone}</p>
+                  </div>
+                  <div className="bg-slate-800/40 p-4 rounded-xl border border-slate-700/30">
+                    <span className="text-slate-500 text-xs font-bold uppercase tracking-wider block mb-1">Pacote</span>
+                    <p className="text-white font-medium">{selectedOrder.followersCount.toLocaleString()} Seguidores</p>
+                    <p className="text-emerald-400 font-bold">R$ {selectedOrder.price.toFixed(2).replace('.', ',')}</p>
+                    <a href={`https://instagram.com/${selectedOrder.instagramUser}`} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline text-sm flex items-center gap-1 mt-1">
+                      @{selectedOrder.instagramUser} <span className="material-symbols-outlined text-[14px]">open_in_new</span>
+                    </a>
+                  </div>
+                  <div className="bg-slate-800/40 p-4 rounded-xl border border-slate-700/30">
+                    <span className="text-slate-500 text-xs font-bold uppercase tracking-wider block mb-1">Pagamento (PIX)</span>
+                    <span className={`px-3 py-1 rounded-lg text-xs font-bold inline-block mt-1 ${statusColor[selectedOrder.paymentStatus] || 'bg-slate-700 text-slate-300'}`}>
+                      {selectedOrder.paymentStatus}
+                    </span>
+                    <p className="text-slate-500 text-xs mt-2 font-mono truncate" title={selectedOrder.txid}>ID: {selectedOrder.txid || 'N/A'}</p>
+                  </div>
+                  <div className="bg-slate-800/40 p-4 rounded-xl border border-slate-700/30 relative">
+                    <span className="text-slate-500 text-xs font-bold uppercase tracking-wider block mb-1">Fornecedor (SMM)</span>
+                    <span className={`px-3 py-1 rounded-lg text-xs font-bold inline-block mt-1 ${statusColor[selectedOrder.deliveryStatus] || 'bg-slate-700 text-slate-300'}`}>
+                      {selectedOrder.deliveryStatus}
+                    </span>
+                    <p className="text-slate-500 text-xs mt-2 font-mono">Ref: {selectedOrder.providerOrderId || 'N/A'}</p>
+                    
+                    <button 
+                      onClick={() => handleRetry(selectedOrder.id)}
+                      disabled={retrying === selectedOrder.id}
+                      className="absolute bottom-4 right-4 bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors disabled:opacity-50 flex items-center gap-1: "
+                    >
+                      <span className="material-symbols-outlined text-[14px]">refresh</span>
+                      {retrying === selectedOrder.id ? 'Ligando...' : 'Reenviar API'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* API Logs */}
+                {selectedOrder.providerLog && (
+                  <div className="bg-slate-900 border border-slate-700/50 rounded-xl p-4">
+                    <h4 className="text-sm font-bold text-slate-300 flex items-center gap-2 mb-3">
+                      <span className="material-symbols-outlined text-sm">terminal</span>
+                      Raw Provider Logs
+                    </h4>
+                    {selectedOrder.providerError && (
+                      <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-lg text-sm mb-3">
+                        <span className="font-bold">Error Reason:</span> {selectedOrder.providerError}
+                      </div>
+                    )}
+                    <pre className="bg-[#0f172a] p-3 rounded-lg text-slate-400 text-xs overflow-x-auto whitespace-pre-wrap max-h-48 border border-slate-800">
+                      {selectedOrder.providerLog}
+                    </pre>
+                  </div>
+                )}
+              </div>
+
+              {/* Right Column: Admin Notes */}
+              <div className="w-full lg:w-80 flex flex-col bg-slate-800/30 border border-slate-700/50 rounded-2xl overflow-hidden">
+                <div className="p-4 border-b border-slate-700/50 bg-slate-800/50">
+                  <h4 className="text-white font-bold flex items-center gap-2">
+                    <span className="material-symbols-outlined text-amber-400 text-lg">edit_note</span>
+                    Anotações Internas
+                  </h4>
+                  <p className="text-slate-400 text-xs mt-1">Visível apenas para administradores</p>
+                </div>
+                <div className="p-4 flex-1 flex flex-col">
+                  <textarea 
+                    value={adminNotes}
+                    onChange={(e) => setAdminNotes(e.target.value)}
+                    placeholder="Escreva detalhes sobre o contato com o cliente, resolução de bugs ou links secundários..."
+                    className="flex-1 w-full bg-slate-900 border border-slate-700 rounded-xl p-4 text-slate-300 text-sm outline-none focus:border-blue-500 resize-none"
+                  ></textarea>
+                </div>
+                <div className="p-4 bg-slate-800/50 border-t border-slate-700/50">
+                  <button 
+                    onClick={saveNotes}
+                    disabled={savingNotes}
+                    className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-lg">save</span>
+                    {savingNotes ? 'Salvando...' : 'Salvar Anotação'}
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

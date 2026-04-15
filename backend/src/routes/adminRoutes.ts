@@ -57,6 +57,22 @@ export default async function adminRoutes(fastify: FastifyInstance) {
     return { orders };
   });
 
+  fastify.put('/api/admin/orders/:id/notes', async (request, reply) => {
+    await checkAuth(request, reply);
+    const { id } = request.params as any;
+    const { notes } = request.body as any;
+
+    try {
+      const order = await prisma.order.update({
+        where: { id },
+        data: { adminNotes: notes }
+      });
+      return { success: true, adminNotes: order.adminNotes };
+    } catch (e: any) {
+      return reply.status(500).send({ error: 'Erro ao salvar notas', details: e.message });
+    }
+  });
+
   fastify.post('/api/admin/orders/:id/retry', async (request, reply) => {
     await checkAuth(request, reply);
     const { id } = request.params as any;
