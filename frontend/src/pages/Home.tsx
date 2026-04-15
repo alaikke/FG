@@ -91,7 +91,9 @@ export const Home: React.FC = () => {
     }
   }, [username]);
 
-  const handleCheckout = () => {
+  const handleCheckout = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!username) return;
     // Navigate to checkout passing the selected plan, username and foundProfile
     navigate('/checkout', { state: { package: selectedPlan, username, foundProfile } });
   };
@@ -197,7 +199,7 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="max-w-2xl mx-auto bg-white border-2 border-primary/10 p-8 rounded-[2.5rem] shadow-xl shadow-primary/5">
-            <div className="flex flex-col gap-6">
+            <form onSubmit={handleCheckout} className="flex flex-col gap-6">
               <div className="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
@@ -255,7 +257,7 @@ export const Home: React.FC = () => {
                 </p>
               </div>
 
-              <button onClick={handleCheckout} className="w-full py-5 rounded-2xl bg-gradient-to-r from-primary to-secondary text-white text-lg font-black shadow-lg shadow-primary/30 hover:shadow-primary/40 transition-all hover:-translate-y-0.5 active:scale-95">
+              <button type="submit" className="w-full py-5 rounded-2xl bg-gradient-to-r from-primary to-secondary text-white text-lg font-black shadow-lg shadow-primary/30 hover:shadow-primary/40 transition-all hover:-translate-y-0.5 active:scale-95">
                 Finalizar Pedido Agora
               </button>
 
@@ -271,7 +273,7 @@ export const Home: React.FC = () => {
                   <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>verified_user</span>
                   <span className="text-xs font-bold uppercase tracking-wider">Pagamento Criptografado</span>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
         </div>
