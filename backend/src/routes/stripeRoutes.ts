@@ -149,13 +149,18 @@ export default async function stripeRoutes(fastify: FastifyInstance) {
                 where: { id: order.id },
                 data: {
                   deliveryStatus: 'IN_PROGRESS',
-                  providerOrderId: String(providerData.order)
+                  providerOrderId: String(providerData.order),
+                  providerLog: JSON.stringify(providerData)
                 }
               });
             } else {
               await prisma.order.update({
                 where: { id: order.id },
-                data: { deliveryStatus: 'ERROR' }
+                data: {
+                  deliveryStatus: 'ERROR',
+                  providerLog: JSON.stringify(providerData),
+                  providerError: providerData.error || 'Erro ao processar (Provider não retornou pedido)'
+                }
               });
             }
           }

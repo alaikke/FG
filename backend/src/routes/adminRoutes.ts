@@ -57,6 +57,70 @@ export default async function adminRoutes(fastify: FastifyInstance) {
     return { orders };
   });
 
+  fastify.post('/api/admin/orders/:id/retry', async (request, reply) => {
+    await checkAuth(request, reply);
+    const { id } = request.params as any;
+    
+    const order = await prisma.order.findUnique({ where: { id } });
+    if (!order) return reply.status(404).send({ error: 'Pedido não encontrado' });
+    
+    try {
+      const BARATO_API_URL = process.env.PROVIDER_API_URL || 'https://baratosociais.com/api/v2';
+      const BARATO_API_KEY = process.env.PROVIDER_API_KEY;
+      
+      if (!BARATO_API_KEY) {
+        return reply.status(500).send({ error: 'Chave API do Fornecedor não configurada' });
+      }
+
+      const params = new URLSearchParams();
+      params.append('key', BARATO_API_KEY);
+      params.append('action', 'add');
+      params.append('service', '1178'); // Id padrão
+      params.append('link', order.instagramUser);
+      params.append('quantity', order.followersCount.toString());
+
+      const providerRes = await fetch(BARATO_API_URL, {
+        method: 'POST',
+        body: params,
+      });
+
+      const providerData = await providerRes.json();
+
+      if (providerData.order) {
+        const updatedOrder = await prisma.order.update({
+          where: { id: order.id },
+          data: {
+            deliveryStatus: 'IN_PROGRESS',
+            providerOrderId: String(providerData.order),
+            providerLog: JSON.stringify(providerData),
+            providerError: null
+          }
+        });
+        return { success: true, order: updatedOrder };
+      } else {
+        const updatedOrder = await prisma.order.update({
+          where: { id: order.id },
+          data: {
+            deliveryStatus: 'ERROR',
+            providerLog: JSON.stringify(providerData),
+            providerError: providerData.error || 'Erro desconhecido do provedor'
+          }
+        });
+        return { success: false, error: providerData.error || 'Erro desconhecido', order: updatedOrder };
+      }
+    } catch (e: any) {
+      const updatedOrder = await prisma.order.update({
+        where: { id: order.id },
+        data: {
+          deliveryStatus: 'ERROR',
+          providerError: e.message,
+          providerLog: e.message
+        }
+      });
+      return reply.status(500).send({ success: false, error: e.message, order: updatedOrder });
+    }
+  });
+
   // ─── PRODUTOS ───
   fastify.get('/api/admin/products', async (request, reply) => {
     await checkAuth(request, reply);

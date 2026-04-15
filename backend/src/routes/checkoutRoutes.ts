@@ -121,11 +121,20 @@ export default async function checkoutRoutes(fastify: FastifyInstance) {
              where: { id: order.id },
              data: {
                providerOrderId: providerData.order.toString(),
-               deliveryStatus: 'IN_PROGRESS'
+               deliveryStatus: 'IN_PROGRESS',
+               providerLog: JSON.stringify(providerData)
              }
            });
            fastify.log.info(`[Sucesso SMM] Seguidores despachados!!! Referência: ${providerData.order}`);
         } else {
+           await prisma.order.update({
+             where: { id: order.id },
+             data: {
+               deliveryStatus: 'ERROR',
+               providerLog: JSON.stringify(providerData),
+               providerError: providerData.error || 'Erro ao processar (Provider não retornou pedido)'
+             }
+           });
            fastify.log.error(`[Erro SMM] ${JSON.stringify(providerData)}`);
         }
       }
@@ -189,14 +198,34 @@ export default async function checkoutRoutes(fastify: FastifyInstance) {
             if (providerData.order) {
               await prisma.order.update({
                 where: { id: order.id },
-                data: { providerOrderId: providerData.order.toString(), deliveryStatus: 'IN_PROGRESS' }
+                data: {
+                  providerOrderId: providerData.order.toString(),
+                  deliveryStatus: 'IN_PROGRESS',
+                  providerLog: JSON.stringify(providerData)
+                }
               });
               fastify.log.info(`[Sucesso SMM] Seguidores despachados! Ref: ${providerData.order}`);
             } else {
+              await prisma.order.update({
+                where: { id: order.id },
+                data: {
+                  deliveryStatus: 'ERROR',
+                  providerLog: JSON.stringify(providerData),
+                  providerError: providerData.error || 'Erro ao processar (Provider não retornou pedido)'
+                }
+              });
               fastify.log.error(`[Erro SMM] ${JSON.stringify(providerData)}`);
             }
           } catch (smmErr: any) {
             fastify.log.error('[Erro SMM dispatch]', smmErr.message);
+            await prisma.order.update({
+              where: { id: order.id },
+              data: {
+                deliveryStatus: 'ERROR',
+                providerError: smmErr.message,
+                providerLog: smmErr.response ? JSON.stringify(smmErr.response.data) : smmErr.message
+              }
+            });
           }
 
           return { 

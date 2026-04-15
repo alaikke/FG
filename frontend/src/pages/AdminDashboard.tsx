@@ -61,15 +61,38 @@ const LoginScreen: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
 const OrdersTab: React.FC = () => {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedLog, setExpandedLog] = useState<string | null>(null);
+  const [retrying, setRetrying] = useState<string | null>(null);
 
-  useEffect(() => {
+  const load = () => {
     authFetch(`${API}/api/admin/orders`).then(r => r.json()).then(d => { setOrders(d.orders || []); setLoading(false); });
-  }, []);
+  };
+  
+  useEffect(() => { load(); }, []);
+
+  const handleRetry = async (orderId: string) => {
+    if (!confirm('Deseja disparar manualmente este pedido novamente no fornecedor? (Custo será gerado se processado)')) return;
+    setRetrying(orderId);
+    try {
+      const res = await authFetch(`${API}/api/admin/orders/${orderId}/retry`, { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        alert('Falha ao reenviar: ' + (data.error || 'Erro desconhecido'));
+      } else {
+        alert('Reenviado com sucesso! SMM ID: ' + data.order.providerOrderId);
+      }
+      load();
+    } catch {
+      alert('Erro inesperado no servidor.');
+    } finally {
+      setRetrying(null);
+    }
+  };
 
   const statusColor: Record<string, string> = {
     PAID: 'bg-green-500/20 text-green-400', PENDING: 'bg-amber-500/20 text-amber-400',
     IN_PROGRESS: 'bg-blue-500/20 text-blue-400', COMPLETED: 'bg-emerald-500/20 text-emerald-400',
-    WAITING_PAYMENT: 'bg-slate-500/20 text-slate-400'
+    WAITING_PAYMENT: 'bg-slate-500/20 text-slate-400', ERROR: 'bg-red-500/20 text-red-500', CANCELLED: 'bg-red-500/20 text-red-500'
   };
 
   if (loading) return <div className="text-center text-slate-400 py-20">Carregando pedidos...</div>;
@@ -83,7 +106,7 @@ const OrdersTab: React.FC = () => {
         <table className="w-full text-sm">
           <thead className="bg-slate-800/50">
             <tr className="text-slate-400 text-left text-xs uppercase tracking-wider">
-              <th className="px-4 py-3">ID</th>
+              <th className="px-4 py-3">ID / Logs</th>
               <th className="px-4 py-3">Cliente</th>
               <th className="px-4 py-3">Instagram</th>
               <th className="px-4 py-3">Pacote</th>
@@ -91,12 +114,21 @@ const OrdersTab: React.FC = () => {
               <th className="px-4 py-3">Pagamento</th>
               <th className="px-4 py-3">Entrega</th>
               <th className="px-4 py-3">Data</th>
+              <th className="px-4 py-3 text-right">Ações</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-700/30">
             {orders.map(o => (
-              <tr key={o.id} className="hover:bg-slate-800/30 transition-colors">
-                <td className="px-4 py-3 font-mono text-slate-300 text-xs">{o.id.substring(0, 8)}</td>
+              <React.Fragment key={o.id}>
+              <tr className="hover:bg-slate-800/30 transition-colors">
+                <td className="px-4 py-3 font-mono text-slate-300 text-xs flex gap-2 items-center">
+                  {o.id.substring(0, 8)}
+                  {o.providerLog && (
+                    <button onClick={() => setExpandedLog(expandedLog === o.id ? null : o.id)} className="p-1 bg-slate-700/40 hover:bg-slate-600 rounded text-blue-400 transition-colors">
+                       <span className="material-symbols-outlined text-sm" style={{ fontSize: '14px' }}>terminal</span>
+                    </button>
+                  )}
+                </td>
                 <td className="px-4 py-3">
                   <p className="text-white font-medium text-xs">{o.clientName}</p>
                   <p className="text-slate-500 text-xs">{o.clientEmail}</p>
@@ -115,7 +147,28 @@ const OrdersTab: React.FC = () => {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-slate-400 text-xs">{new Date(o.createdAt).toLocaleDateString('pt-BR')}</td>
+                <td className="px-4 py-3 text-right">
+                  <button 
+                    onClick={() => handleRetry(o.id)}
+                    disabled={retrying === o.id}
+                    className="bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
+                  >
+                    {retrying === o.id ? '...' : 'Refazer (SMM)'}
+                  </button>
+                </td>
               </tr>
+              {expandedLog === o.id && (
+                <tr className="bg-slate-900/50">
+                  <td colSpan={9} className="px-4 py-3 border-l-4 border-blue-500">
+                    <div className="text-xs space-y-2">
+                       {o.providerError && <p className="text-red-400 font-bold mb-1">Motivo: {o.providerError}</p>}
+                       <p className="text-slate-500 mb-1">Logs API Baratosociais:</p>
+                       <pre className="bg-[#0f172a] p-3 rounded-lg text-slate-300 overflow-x-auto whitespace-pre-wrap">{o.providerLog}</pre>
+                    </div>
+                  </td>
+                </tr>
+              )}
+              </React.Fragment>
             ))}
           </tbody>
         </table>

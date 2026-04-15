@@ -29,6 +29,8 @@ model Order {
   
   // BaratoSociais Integration
   providerOrderId  String?  // ID retornado do provedor
+  providerLog      String?  @db.Text // Logs json salvos do provider (BaratoSociais)
+  providerError    String?  @db.Text // String formatada legível em caso de erro no provider
   deliveryStatus   String   @default("WAITING_PAYMENT") // WAITING_PAYMENT, IN_PROGRESS, COMPLETED, ERROR
   
   createdAt        DateTime @default(now())
