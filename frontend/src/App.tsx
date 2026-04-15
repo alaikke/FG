@@ -36,6 +36,7 @@ function App() {
         {/* Site público */}
         <Route path="/" element={<Layout />}>
           <Route index element={<Growth />} />
+          <Route path="home" element={<Growth />} />
           <Route path="precos" element={<Home />} />
           <Route path="checkout" element={<Checkout />} />
           <Route path="payment/pix" element={<PaymentPix />} />
