@@ -34,7 +34,7 @@ export const Header: React.FC = () => {
               <img src={logoUrl} alt="FastGram" className="h-9 object-contain" />
             ) : (
               <>
-                <span className="material-symbols-outlined text-blue-600 text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>insights</span>
+                <span className="material-symbols-outlined text-blue-600 text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>rocket_launch</span>
                 <span className="text-2xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-headline tracking-tight">FastGram</span>
               </>
             )}
