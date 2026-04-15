@@ -28,8 +28,9 @@ export const Growth: React.FC = () => {
             </div>
           </div>
           <div className="lg:col-span-5 relative">
-            <div className="relative z-10 rounded-[2rem] overflow-hidden shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500">
-              <img alt="Professional social media manager" className="w-full h-[500px] object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcAl0OZWeOicmH_aQn6xI_-0o3itKqYhu1mIzRjL5UT3A4TJaezRixijWjOxrXAt2G_NcA0ArXDCGfMMGhXE6qe8sBFLafEZ5tX2wZJje_AGJFOCAEmxY-wGARORqz5w9Dgtxyc6h1dw7C7enAmLCqAXseZ8UAXkMKOSSX6j_4jAZpJB-Hk2SdzeOUqbY_G-auLVVsTzyA4m8B2EgVBtQX05Ofy-nlr0Kj2cwuj0k3R6_KPP_MN2UmSL-vMZwsEqRKbpB24rZ2s0et" />
+            <div className="relative z-10 rounded-[2rem] overflow-hidden shadow-[0px_20px_40px_rgba(0,0,0,0.1)] rotate-3 hover:rotate-0 transition-all duration-500 bg-gradient-to-br from-[#f8f9ff] to-[#e4e9f7] border-4 border-white h-[450px] md:h-[500px] flex items-center justify-center group">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/60 via-transparent to-transparent opacity-50"></div>
+              <img alt="FastGram Rocket" className="w-1/2 h-1/2 object-contain drop-shadow-[0_20px_30px_rgba(126,20,255,0.4)] group-hover:scale-110 group-hover:-translate-y-4 transition-transform duration-700 ease-out relative z-10" src="/favicon.svg" />
               <div className="absolute bottom-6 left-6 right-6 bg-white/80 backdrop-blur-md p-6 rounded-2xl shadow-xl">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white">
