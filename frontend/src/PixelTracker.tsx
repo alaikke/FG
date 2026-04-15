@@ -14,25 +14,7 @@ export const PixelTracker: React.FC = () => {
     fetch(`${API_BASE}/api/settings/public`)
       .then(r => r.json())
       .then(data => {
-        // Google Tag (gtag.js)
-        if (data.googleTagId) {
-          const gTagId = data.googleTagId.trim();
-          const script = document.createElement('script');
-          script.src = `https://www.googletagmanager.com/gtag/js?id=${gTagId}`;
-          script.async = true;
-          document.head.appendChild(script);
-
-          const inlineScript = document.createElement('script');
-          inlineScript.innerHTML = `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${gTagId}');
-          `;
-          document.head.appendChild(inlineScript);
-        }
-
-        // Meta Pixel
+        // A Tag do Google agora está fixada diretamente no index.html para o Google Ads detectar na hora.        // Meta Pixel
         if (data.metaPixelId) {
           const pixelId = data.metaPixelId.trim();
           const metaScript = document.createElement('script');
