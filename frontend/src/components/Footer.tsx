@@ -42,9 +42,6 @@ export const Footer: React.FC = () => {
           <span className="material-symbols-outlined text-slate-400 cursor-pointer hover:text-primary transition-colors">public</span>
         </div>
       </div>
-      <button className="fixed bottom-6 right-6 w-16 h-16 bg-[#25D366] text-white rounded-full shadow-2xl flex items-center justify-center z-40 transition-transform active:scale-90 md:hidden">
-        <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>chat</span>
-      </button>
     </footer>
   );
 };
