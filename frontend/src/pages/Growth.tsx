@@ -30,11 +30,7 @@ export const Growth: React.FC = () => {
           <div className="lg:col-span-5 relative">
             <div className="relative z-10 rounded-[2rem] overflow-hidden shadow-[0px_20px_40px_rgba(0,0,0,0.1)] rotate-3 hover:rotate-0 transition-all duration-500 bg-gradient-to-br from-[#f8f9ff] to-[#e4e9f7] border-4 border-white h-[450px] md:h-[500px] flex items-center justify-center group">
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/60 via-transparent to-transparent opacity-50"></div>
-              <img 
-                src="/rocket.png" 
-                alt="Foguete FastGram" 
-                className="w-[80%] h-[80%] md:w-[60%] md:h-[60%] object-contain drop-shadow-[0_20px_30px_rgba(126,20,255,0.4)] group-hover:scale-110 group-hover:-translate-y-4 transition-transform duration-700 ease-out relative z-10" 
-              />
+              <img alt="FastGram Rocket" className="w-1/2 h-1/2 object-contain drop-shadow-[0_20px_30px_rgba(126,20,255,0.4)] group-hover:scale-110 group-hover:-translate-y-4 transition-transform duration-700 ease-out relative z-10" src="/rocket.png" />
               <div className="absolute bottom-6 left-6 right-6 bg-white/80 backdrop-blur-md p-6 rounded-2xl shadow-xl">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white">
