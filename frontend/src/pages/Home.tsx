@@ -227,7 +227,7 @@ export const Home: React.FC = () => {
                   <span className="absolute left-6 top-1/2 -translate-y-1/2 text-primary font-bold text-xl">@</span>
                   <input 
                     value={username}
-                    onChange={(e) => setUsername(e.target.value.replace('@', ''))}
+                    onChange={(e) => setUsername(e.target.value.replace(/@/g, '').replace(/ /g, ''))}
                     className="w-full pl-12 pr-6 py-5 bg-surface-container-low rounded-2xl border-2 border-transparent focus:border-primary/20 focus:bg-white transition-all outline-none text-on-background font-medium placeholder:text-slate-400 text-lg shadow-inner" 
                     placeholder="nomedeusuario" 
                     required 
