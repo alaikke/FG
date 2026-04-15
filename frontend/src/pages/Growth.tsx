@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { BlogCarousel } from '../components/BlogCarousel';
+import { ReviewCarousel } from '../components/ReviewCarousel';
 
 export const Growth: React.FC = () => {
   return (
@@ -79,6 +81,12 @@ export const Growth: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Blog Carousel */}
+      <BlogCarousel />
+
+      {/* Review Carousel */}
+      <ReviewCarousel />
 
       {/* CTA Section */}
       <section className="py-32 px-8 max-w-7xl mx-auto text-center" id="cta">
