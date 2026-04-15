@@ -76,7 +76,10 @@ const OrdersTab: React.FC = () => {
     if (!confirm('Deseja disparar manualmente este pedido novamente no fornecedor? (Custo será gerado se processado)')) return;
     setRetrying(orderId);
     try {
-      const res = await authFetch(`${API}/api/admin/orders/${orderId}/retry`, { method: 'POST' });
+      const res = await authFetch(`${API}/api/admin/orders/${orderId}/retry`, { 
+        method: 'POST',
+        body: JSON.stringify({})
+      });
       const data = await res.json();
       if (!res.ok || !data.success) {
         alert('Falha ao reenviar: ' + (data.error || 'Erro desconhecido'));
@@ -100,13 +103,16 @@ const OrdersTab: React.FC = () => {
         method: 'PUT',
         body: JSON.stringify({ notes: adminNotes })
       });
+      const data = await res.json();
       if (res.ok) {
-        const data = await res.json();
         setSelectedOrder({ ...selectedOrder, adminNotes: data.adminNotes });
         load();
+        alert('Anotação salva com sucesso!');
+      } else {
+        alert('Erro ao salvar nota: ' + (data.error || 'Falha na requisição'));
       }
     } catch (e) {
-      alert('Erro ao salvar nota');
+      alert('Erro inesperado ao salvar nota');
     }
     setSavingNotes(false);
   };
@@ -185,7 +191,7 @@ const OrdersTab: React.FC = () => {
       {/* Order Details Modal Overlay */}
       {selectedOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0f172a]/80 backdrop-blur-sm">
-          <div className="bg-[#1e293b] w-full max-w-4xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-slate-700/50">
+          <div className="bg-[#1e293b] w-full max-w-5xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-slate-700/50">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-6 border-b border-slate-700/50 bg-[#1e293b]">
               <div>
@@ -227,19 +233,21 @@ const OrdersTab: React.FC = () => {
                     </span>
                     <p className="text-slate-500 text-xs mt-2 font-mono truncate" title={selectedOrder.txid}>ID: {selectedOrder.txid || 'N/A'}</p>
                   </div>
-                  <div className="bg-slate-800/40 p-4 rounded-xl border border-slate-700/30 relative">
-                    <span className="text-slate-500 text-xs font-bold uppercase tracking-wider block mb-1">Fornecedor (SMM)</span>
-                    <span className={`px-3 py-1 rounded-lg text-xs font-bold inline-block mt-1 ${statusColor[selectedOrder.deliveryStatus] || 'bg-slate-700 text-slate-300'}`}>
-                      {selectedOrder.deliveryStatus}
-                    </span>
-                    <p className="text-slate-500 text-xs mt-2 font-mono">Ref: {selectedOrder.providerOrderId || 'N/A'}</p>
+                  <div className="bg-slate-800/40 p-4 rounded-xl border border-slate-700/30 flex flex-col justify-between">
+                    <div>
+                      <span className="text-slate-500 text-xs font-bold uppercase tracking-wider block mb-1">Fornecedor (SMM)</span>
+                      <span className={`px-3 py-1 rounded-lg text-xs font-bold inline-block mt-1 ${statusColor[selectedOrder.deliveryStatus] || 'bg-slate-700 text-slate-300'}`}>
+                        {selectedOrder.deliveryStatus}
+                      </span>
+                      <p className="text-slate-500 text-xs mt-2 font-mono">Ref: {selectedOrder.providerOrderId || 'N/A'}</p>
+                    </div>
                     
                     <button 
                       onClick={() => handleRetry(selectedOrder.id)}
                       disabled={retrying === selectedOrder.id}
-                      className="absolute bottom-4 right-4 bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors disabled:opacity-50 flex items-center gap-1: "
+                      className="mt-4 w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-xs font-bold transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                     >
-                      <span className="material-symbols-outlined text-[14px]">refresh</span>
+                      <span className="material-symbols-outlined text-[16px]">refresh</span>
                       {retrying === selectedOrder.id ? 'Ligando...' : 'Reenviar API'}
                     </button>
                   </div>

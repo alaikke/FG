@@ -22,7 +22,7 @@ jobs:
             
             # Backend
             cd backend
-            npm ci --omit=dev
+            npm ci
             npx prisma generate
             npx prisma db push
             npm run build
