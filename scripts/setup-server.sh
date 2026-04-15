@@ -21,6 +21,10 @@ apt install -y nodejs
 echo "📦 Instalando Nginx..."
 apt install -y nginx
 
+# 3b. Instalar Certbot (Let's Encrypt)
+echo "📦 Instalando Certbot..."
+apt install -y certbot python3-certbot-nginx
+
 # 4. Instalar PM2 globalmente
 echo "📦 Instalando PM2..."
 npm install -g pm2
@@ -88,20 +92,24 @@ pm2 startup
 
 # 13. Configurar firewall
 echo "🔒 Configurando firewall..."
-ufw allow 22
-ufw allow 80
-ufw allow 443
+ufw allow OpenSSH
+ufw allow 'Nginx Full'
 ufw --force enable
 
 echo ""
 echo "============================================"
 echo "✅ FastGram instalado com sucesso!"
 echo ""
-echo "📍 Acesse: http://31.97.83.80"
+echo "📍 Acesse: http://SEU_IP"
 echo ""
-echo "⚠️  IMPORTANTE: Edite o arquivo .env do backend"
-echo "    com as credenciais reais:"
-echo "    nano /var/www/fastgram/backend/.env"
-echo ""  
-echo "    Depois reinicie: pm2 restart fastgram-api"
+echo "⚠️  PRÓXIMOS PASSOS:"
+echo ""
+echo "  1. Edite o .env do backend com credenciais reais:"
+echo "     nano /var/www/fastgram/backend/.env"
+echo "     pm2 restart fastgram-api"
+echo ""
+echo "  2. Aponte o DNS de fastgram.com.br para o IP do servidor"
+echo ""
+echo "  3. Instale o SSL (HTTPS):"
+echo "     bash /var/www/fastgram/scripts/setup-ssl.sh"
 echo "============================================"

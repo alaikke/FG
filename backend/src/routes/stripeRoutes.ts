@@ -2,9 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { prisma } from '../server';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: '2025-01-27.acacia', // Or current version
-});
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
 export default async function stripeRoutes(fastify: FastifyInstance) {
   // 1. Create Payment Intent
@@ -85,7 +83,7 @@ export default async function stripeRoutes(fastify: FastifyInstance) {
     const defaultSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
     const sig = request.headers['stripe-signature'];
 
-    let event: Stripe.Event;
+    let event: any;
 
     try {
       // In fastify, the raw body is attached to request.rawBody by our custom parser
@@ -99,7 +97,7 @@ export default async function stripeRoutes(fastify: FastifyInstance) {
         // If no webhook secret is set (running locally without CLI tunnel), we skip verification for dev purposes
         // CAUTION: Only for development!
         request.log.warn('No STRIPE_WEBHOOK_SECRET found, trusting request blindy (DANGER IN PROD)');
-        event = request.body as Stripe.Event;
+        event = request.body as any;
       } else {
         request.log.error(`Webhook signature verification failed: ${err.message}`);
         return reply.status(400).send(`Webhook Error: ${err.message}`);
@@ -109,7 +107,7 @@ export default async function stripeRoutes(fastify: FastifyInstance) {
     try {
       // Handle the event
       if (event.type === 'payment_intent.succeeded') {
-        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        const paymentIntent = event.data.object as any;
         const intentId = paymentIntent.id;
 
         // Find the matching order

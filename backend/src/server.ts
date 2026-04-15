@@ -11,9 +11,11 @@ export const fastify = Fastify({
 });
 export const prisma = new PrismaClient();
 
-// Setup CORS para o Vite rodando local
+// Setup CORS — produção restringe ao domínio, dev libera localhost
 fastify.register(cors, {
-  origin: '*',
+  origin: process.env.NODE_ENV === 'production'
+    ? ['https://fastgram.com.br', 'https://www.fastgram.com.br']
+    : true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 });
 
@@ -28,9 +30,9 @@ fastify.addContentTypeParser('application/json', { parseAs: 'buffer' }, function
     (req as any).rawBody = rawBodyBuffer;
     
     done(null, json);
-  } catch (err) {
-    err.statusCode = 400;
-    done(err, undefined);
+  } catch (err: any) {
+    (err as any).statusCode = 400;
+    done(err as any, undefined);
   }
 });
 
