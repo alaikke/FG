@@ -98,6 +98,14 @@ export const Home: React.FC = () => {
     navigate('/checkout', { state: { package: selectedPlan, username, foundProfile } });
   };
 
+  const handlePlanSelect = (id: string) => {
+    setSelectedPlanId(id);
+    // Pequeno delay para garantir que a renderização acompanhe se necessário
+    setTimeout(() => {
+      document.getElementById('profile-input-section')?.scrollIntoView({ behavior: 'smooth' });
+    }, 50);
+  };
+
   return (
     <main>
       {/* Hero Section */}
@@ -164,7 +172,7 @@ export const Home: React.FC = () => {
               return (
                 <div 
                   key={pkg.id}
-                  onClick={() => setSelectedPlanId(pkg.id)}
+                  onClick={() => handlePlanSelect(pkg.id)}
                   className={`package-card group relative bg-surface-container-lowest p-8 rounded-[2rem] border-2 transition-all duration-300 cursor-pointer flex flex-col items-center text-center ${isSelected ? 'border-primary shadow-2xl -translate-y-1' : 'border-transparent hover:border-primary/20'}`}
                 >
                   {pkg.tag && (
@@ -198,7 +206,7 @@ export const Home: React.FC = () => {
             })}
           </div>
 
-          <div className="max-w-2xl mx-auto bg-white border-2 border-primary/10 p-8 rounded-[2.5rem] shadow-xl shadow-primary/5">
+          <div id="profile-input-section" className="max-w-2xl mx-auto bg-white border-2 border-primary/10 p-8 rounded-[2.5rem] shadow-xl shadow-primary/5">
             <form onSubmit={handleCheckout} className="flex flex-col gap-6">
               <div className="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div className="flex items-center gap-3">

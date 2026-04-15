@@ -45,10 +45,13 @@ export const Header: React.FC = () => {
           <Link to="/precos" className={getLinkClass('/precos')}>Preços</Link>
           <Link to="/blog" className={getLinkClass('/blog')}>Blog</Link>
           <Link to="/track" className={getLinkClass('/track')}>Acompanhar Pedido</Link>
-          <a href="#" className="text-slate-600 font-medium hover:text-purple-600 transition-colors duration-300">Suporte</a>
         </div>
         <div className="flex items-center gap-4">
-          <button className="material-symbols-outlined p-2 text-slate-600 hover:text-blue-600 transition-transform active:scale-90">menu</button>
+          <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer" className="hidden md:flex items-center gap-2 bg-blue-600 text-white px-5 py-2 font-medium hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-600/30" style={{ borderRadius: '100px' }}>
+            <span className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.6)]"></span>
+            Suporte
+          </a>
+          <button className="material-symbols-outlined md:hidden p-2 text-slate-600 hover:text-blue-600 transition-transform active:scale-90">menu</button>
         </div>
       </div>
     </nav>
