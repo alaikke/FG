@@ -38,8 +38,8 @@ const LoginScreen: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0f172a]">
-      <form onSubmit={handleLogin} className="bg-[#1e293b] p-10 rounded-3xl shadow-2xl w-full max-w-sm space-y-6">
+    <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0f172a] to-black">
+      <form onSubmit={handleLogin} className="bg-white/[0.02] backdrop-blur-2xl p-10 rounded-3xl shadow-2xl w-full max-w-sm space-y-6">
         <div className="text-center">
           <h1 className="text-2xl font-black text-white">⚡ FastGram</h1>
           <p className="text-slate-400 text-sm mt-1">Painel Administrativo</p>
@@ -49,18 +49,18 @@ const LoginScreen: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
             type="email" value={email} onChange={e => setEmail(e.target.value)}
             placeholder="E-mail de acesso"
             required
-            className="w-full bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 outline-none focus:border-blue-500 transition-colors"
+            className="w-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0f172a] to-black border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 outline-none focus:border-blue-500 transition-colors"
           />
           <input
             type="password" value={password} onChange={e => setPassword(e.target.value)}
             placeholder="Senha secreta"
             required
-            className="w-full bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 outline-none focus:border-blue-500 transition-colors"
+            className="w-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0f172a] to-black border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 outline-none focus:border-blue-500 transition-colors"
           />
         </div>
         {error && <p className="text-red-400 text-sm text-center font-bold">{error}</p>}
         <button type="submit" disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50">
+          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-lg shadow-blue-500/25 text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50">
           {loading ? 'Entrando...' : 'Entrar'}
         </button>
       </form>
@@ -146,9 +146,9 @@ const OrdersTab: React.FC = () => {
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold text-white">Pedidos ({orders.length})</h2>
       </div>
-      <div className="overflow-x-auto rounded-2xl border border-slate-700/50">
+      <div className="overflow-x-auto rounded-3xl hover:border-white/10 transition-colors border border-white/5">
         <table className="w-full text-sm">
-          <thead className="bg-slate-800/50">
+          <thead className="bg-white/[0.02] backdrop-blur-xl shadow-2xl">
             <tr className="text-slate-400 text-left text-xs uppercase tracking-wider">
               <th className="px-4 py-3">ID</th>
               <th className="px-4 py-3">Cliente</th>
@@ -163,7 +163,7 @@ const OrdersTab: React.FC = () => {
           </thead>
           <tbody className="divide-y divide-slate-700/30">
             {orders.map(o => (
-              <tr key={o.id} className="hover:bg-slate-800/30 transition-colors">
+              <tr key={o.id} className="hover:bg-white/[0.02] backdrop-blur-xl shadow-2xl transition-colors">
                 <td className="px-4 py-3 font-mono text-slate-300 text-xs">
                   {o.id.substring(0, 8)}
                 </td>
@@ -201,10 +201,10 @@ const OrdersTab: React.FC = () => {
 
       {/* Order Details Modal Overlay */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0f172a]/80 backdrop-blur-sm">
-          <div className="bg-[#1e293b] w-full max-w-5xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-slate-700/50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0f172a] to-black/80 backdrop-blur-sm">
+          <div className="bg-white/[0.02] backdrop-blur-2xl w-full max-w-5xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-white/5">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-slate-700/50 bg-[#1e293b]">
+            <div className="flex items-center justify-between p-6 border-b border-white/5 bg-white/[0.02] backdrop-blur-2xl">
               <div>
                 <h3 className="text-xl font-bold text-white flex items-center gap-2">
                   <span className="material-symbols-outlined text-blue-400">receipt_long</span>
@@ -223,13 +223,13 @@ const OrdersTab: React.FC = () => {
               {/* Left Column: Info & Logs */}
               <div className="flex-1 space-y-6">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-slate-800/40 p-4 rounded-xl border border-slate-700/30">
+                  <div className="bg-white/[0.02] backdrop-blur-xl shadow-2xl p-4 rounded-xl border border-white/5">
                     <span className="text-slate-500 text-xs font-bold uppercase tracking-wider block mb-1">Cliente</span>
                     <p className="text-white font-medium">{selectedOrder.clientName}</p>
                     <p className="text-slate-400 text-sm">{selectedOrder.clientEmail}</p>
                     <p className="text-slate-400 text-sm">{selectedOrder.clientPhone}</p>
                   </div>
-                  <div className="bg-slate-800/40 p-4 rounded-xl border border-slate-700/30">
+                  <div className="bg-white/[0.02] backdrop-blur-xl shadow-2xl p-4 rounded-xl border border-white/5">
                     <span className="text-slate-500 text-xs font-bold uppercase tracking-wider block mb-1">Pacote</span>
                     <p className="text-white font-medium">{selectedOrder.followersCount.toLocaleString()} Seguidores</p>
                     <p className="text-emerald-400 font-bold">R$ {selectedOrder.price.toFixed(2).replace('.', ',')}</p>
@@ -237,14 +237,14 @@ const OrdersTab: React.FC = () => {
                       @{selectedOrder.instagramUser} <span className="material-symbols-outlined text-[14px]">open_in_new</span>
                     </a>
                   </div>
-                  <div className="bg-slate-800/40 p-4 rounded-xl border border-slate-700/30">
+                  <div className="bg-white/[0.02] backdrop-blur-xl shadow-2xl p-4 rounded-xl border border-white/5">
                     <span className="text-slate-500 text-xs font-bold uppercase tracking-wider block mb-1">Pagamento (PIX)</span>
                     <span className={`px-3 py-1 rounded-lg text-xs font-bold inline-block mt-1 ${statusColor[selectedOrder.paymentStatus] || 'bg-slate-700 text-slate-300'}`}>
                       {selectedOrder.paymentStatus}
                     </span>
                     <p className="text-slate-500 text-xs mt-2 font-mono truncate" title={selectedOrder.txid}>ID: {selectedOrder.txid || 'N/A'}</p>
                   </div>
-                  <div className="bg-slate-800/40 p-4 rounded-xl border border-slate-700/30 flex flex-col justify-between">
+                  <div className="bg-white/[0.02] backdrop-blur-xl shadow-2xl p-4 rounded-xl border border-white/5 flex flex-col justify-between">
                     <div>
                       <span className="text-slate-500 text-xs font-bold uppercase tracking-wider block mb-1">Fornecedor (SMM)</span>
                       <span className={`px-3 py-1 rounded-lg text-xs font-bold inline-block mt-1 ${statusColor[selectedOrder.deliveryStatus] || 'bg-slate-700 text-slate-300'}`}>
@@ -256,7 +256,7 @@ const OrdersTab: React.FC = () => {
                     <button 
                       onClick={() => handleRetry(selectedOrder.id)}
                       disabled={retrying === selectedOrder.id}
-                      className="mt-4 w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-xs font-bold transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                      className="mt-4 w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-lg shadow-blue-500/25 text-white py-2 rounded-lg text-xs font-bold transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                       <span className="material-symbols-outlined text-[16px]">refresh</span>
                       {retrying === selectedOrder.id ? 'Ligando...' : 'Reenviar API'}
@@ -266,7 +266,7 @@ const OrdersTab: React.FC = () => {
 
                 {/* API Logs */}
                 {selectedOrder.providerLog && (
-                  <div className="bg-slate-900 border border-slate-700/50 rounded-xl p-4">
+                  <div className="bg-black/20 backdrop-blur-md border border-white/5 rounded-xl p-4">
                     <h4 className="text-sm font-bold text-slate-300 flex items-center gap-2 mb-3">
                       <span className="material-symbols-outlined text-sm">terminal</span>
                       Raw Provider Logs
@@ -276,7 +276,7 @@ const OrdersTab: React.FC = () => {
                         <span className="font-bold">Error Reason:</span> {selectedOrder.providerError}
                       </div>
                     )}
-                    <pre className="bg-[#0f172a] p-3 rounded-lg text-slate-400 text-xs overflow-x-auto whitespace-pre-wrap max-h-48 border border-slate-800">
+                    <pre className="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0f172a] to-black p-3 rounded-lg text-slate-400 text-xs overflow-x-auto whitespace-pre-wrap max-h-48 border border-slate-800">
                       {selectedOrder.providerLog}
                     </pre>
                   </div>
@@ -284,8 +284,8 @@ const OrdersTab: React.FC = () => {
               </div>
 
               {/* Right Column: Admin Notes */}
-              <div className="w-full lg:w-80 flex flex-col bg-slate-800/30 border border-slate-700/50 rounded-2xl overflow-hidden">
-                <div className="p-4 border-b border-slate-700/50 bg-slate-800/50">
+              <div className="w-full lg:w-80 flex flex-col bg-white/[0.02] backdrop-blur-xl shadow-2xl border border-white/5 rounded-3xl hover:border-white/10 transition-colors overflow-hidden">
+                <div className="p-4 border-b border-white/5 bg-white/[0.02] backdrop-blur-xl shadow-2xl">
                   <h4 className="text-white font-bold flex items-center gap-2">
                     <span className="material-symbols-outlined text-amber-400 text-lg">edit_note</span>
                     Anotações Internas
@@ -297,14 +297,14 @@ const OrdersTab: React.FC = () => {
                     value={adminNotes}
                     onChange={(e) => setAdminNotes(e.target.value)}
                     placeholder="Escreva detalhes sobre o contato com o cliente, resolução de bugs ou links secundários..."
-                    className="flex-1 w-full bg-slate-900 border border-slate-700 rounded-xl p-4 text-slate-300 text-sm outline-none focus:border-blue-500 resize-none"
+                    className="flex-1 w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-xl p-4 text-slate-300 text-sm outline-none focus:border-blue-500 resize-none"
                   ></textarea>
                 </div>
-                <div className="p-4 bg-slate-800/50 border-t border-slate-700/50">
+                <div className="p-4 bg-white/[0.02] backdrop-blur-xl shadow-2xl border-t border-white/5">
                   <button 
                     onClick={saveNotes}
                     disabled={savingNotes}
-                    className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 shadow-lg shadow-amber-500/25 text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                   >
                     <span className="material-symbols-outlined text-lg">save</span>
                     {savingNotes ? 'Salvando...' : 'Salvar Anotação'}
@@ -371,54 +371,54 @@ const ProductsTab: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold text-white">Produtos ({products.length})</h2>
-        <button onClick={addProduct} className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-4 py-2 rounded-xl flex items-center gap-2 transition-colors">
+        <button onClick={addProduct} className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-lg shadow-blue-500/25 text-white text-sm font-bold px-4 py-2 rounded-xl flex items-center gap-2 transition-colors">
           <span className="material-symbols-outlined text-lg">add</span> Novo Produto
         </button>
       </div>
 
       <div className="grid gap-4">
         {products.map(p => (
-          <div key={p.id} className={`bg-slate-800/50 rounded-2xl p-5 border ${p.active ? 'border-slate-700/50' : 'border-red-500/30 opacity-60'}`}>
+          <div key={p.id} className={`bg-white/[0.02] backdrop-blur-xl shadow-2xl rounded-3xl hover:border-white/10 transition-colors p-5 border ${p.active ? 'border-white/5' : 'border-red-500/30 opacity-60'}`}>
             {editing === p.id ? (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <div>
                     <label className="text-xs text-slate-400 font-bold block mb-1">Seguidores</label>
                     <input value={form.followers} onChange={e => setForm({ ...form, followers: e.target.value })}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-blue-500" />
+                      className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-blue-500" />
                   </div>
                   <div>
                     <label className="text-xs text-slate-400 font-bold block mb-1">Subtítulo</label>
                     <input value={form.subtitle} onChange={e => setForm({ ...form, subtitle: e.target.value })}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-blue-500" />
+                      className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-blue-500" />
                   </div>
                   <div>
                     <label className="text-xs text-slate-400 font-bold block mb-1">Preço (R$)</label>
                     <input value={form.price} onChange={e => setForm({ ...form, price: e.target.value })}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-blue-500" />
+                      className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-blue-500" />
                   </div>
                   <div>
                     <label className="text-xs text-slate-400 font-bold block mb-1">Tag (opcional)</label>
                     <input value={form.tag} onChange={e => setForm({ ...form, tag: e.target.value })} placeholder="Mais Popular"
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-blue-500" />
+                      className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-blue-500" />
                   </div>
                 </div>
                 <div>
                   <label className="text-xs text-slate-400 font-bold block mb-1">Ícone (Material Symbols)</label>
                   <input value={form.icon} onChange={e => setForm({ ...form, icon: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-blue-500" />
+                    className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-blue-500" />
                 </div>
                 <div>
                   <label className="text-xs text-slate-400 font-bold block mb-1">Features</label>
                   {form.features.map((f, i) => (
                     <input key={i} value={f} onChange={e => { const nf = [...form.features]; nf[i] = e.target.value; setForm({ ...form, features: nf }); }}
                       placeholder={`Feature ${i + 1}`}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-blue-500 mb-2" />
+                      className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-blue-500 mb-2" />
                   ))}
                   <button onClick={() => setForm({ ...form, features: [...form.features, ''] })} className="text-blue-400 text-xs font-bold hover:underline">+ Adicionar feature</button>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={save} className="bg-green-600 hover:bg-green-500 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors">Salvar</button>
+                  <button onClick={save} className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 shadow-lg shadow-emerald-500/25 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors">Salvar</button>
                   <button onClick={() => setEditing(null)} className="bg-slate-700 hover:bg-slate-600 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors">Cancelar</button>
                 </div>
               </div>
@@ -523,7 +523,7 @@ const SettingsTab: React.FC<{ role: string }> = ({ role }) => {
       {msg && <div className="bg-green-500/20 text-green-400 border border-green-500/30 px-4 py-3 rounded-xl text-sm font-bold">{msg}</div>}
 
       {/* Logo (Apenas ADMIN pode editar, mas EDITOR pode ver) */}
-      <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50 space-y-4">
+      <div className="bg-white/[0.02] backdrop-blur-xl shadow-2xl rounded-3xl hover:border-white/10 transition-colors p-6 border border-white/5 space-y-4">
         <h3 className="text-white font-bold flex items-center gap-2">
           <span className="material-symbols-outlined text-blue-400">image</span> Logo do Site
         </h3>
@@ -531,14 +531,14 @@ const SettingsTab: React.FC<{ role: string }> = ({ role }) => {
           {logoUrl ? (
             <img src={logoUrl} alt="Logo" className="h-16 object-contain bg-white rounded-xl p-2" />
           ) : (
-            <div className="h-16 w-32 bg-slate-900 rounded-xl flex items-center justify-center text-slate-500 text-xs">Sem logo</div>
+            <div className="h-16 w-32 bg-black/20 backdrop-blur-md rounded-xl flex items-center justify-center text-slate-500 text-xs">Sem logo</div>
           )}
           {role === 'ADMIN' && (
             <div>
               <input type="file" ref={fileRef} accept="image/*" onChange={handleLogoUpload} className="hidden" />
               <div className="flex items-center gap-2">
                 <button onClick={() => fileRef.current?.click()}
-                  className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors">
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-lg shadow-blue-500/25 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors">
                   Alterar Logo
                 </button>
                 {logoUrl && (
@@ -554,7 +554,7 @@ const SettingsTab: React.FC<{ role: string }> = ({ role }) => {
       </div>
 
       {/* Tags */}
-      <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50 space-y-4">
+      <div className="bg-white/[0.02] backdrop-blur-xl shadow-2xl rounded-3xl hover:border-white/10 transition-colors p-6 border border-white/5 space-y-4">
         <h3 className="text-white font-bold flex items-center gap-2">
           <span className="material-symbols-outlined text-blue-400">code</span> Tags de Rastreamento
         </h3>
@@ -562,38 +562,38 @@ const SettingsTab: React.FC<{ role: string }> = ({ role }) => {
           <div>
             <label className="text-xs text-slate-400 font-bold block mb-1">Google Tag (GTM / GA4)</label>
             <input value={googleTagId} onChange={e => setGoogleTagId(e.target.value)} placeholder="GTM-XXXXXXX ou G-XXXXXXX"
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
+              className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
           </div>
           <div>
             <label className="text-xs text-slate-400 font-bold block mb-1">Google Ads / Rótulo Conversão (Opcional)</label>
             <input value={googleAdsConversionId} onChange={e => setGoogleAdsConversionId(e.target.value)} placeholder="AW-12345/AbCde..."
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
+              className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
           </div>
           <div>
             <label className="text-xs text-slate-400 font-bold block mb-1">Meta Pixel ID</label>
             <input value={metaPixelId} onChange={e => setMetaPixelId(e.target.value)} placeholder="123456789012345"
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
+              className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
           </div>
         </div>
-        <button onClick={saveTags} className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-6 py-2 rounded-xl transition-colors">
+        <button onClick={saveTags} className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-lg shadow-blue-500/25 text-white text-sm font-bold px-6 py-2 rounded-xl transition-colors">
           Salvar Tags
         </button>
       </div>
 
       {/* Password do seu próprio usuário */}
-      <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50 space-y-4">
+      <div className="bg-white/[0.02] backdrop-blur-xl shadow-2xl rounded-3xl hover:border-white/10 transition-colors p-6 border border-white/5 space-y-4">
         <h3 className="text-white font-bold flex items-center gap-2">
           <span className="material-symbols-outlined text-blue-400">lock</span> Alterar Minha Senha
         </h3>
         {passMsg && <p className={`text-sm font-bold ${passMsg.includes('sucesso') ? 'text-green-400' : 'text-red-400'}`}>{passMsg}</p>}
         <div className="space-y-3">
           <input type="password" value={currentPass} onChange={e => setCurrentPass(e.target.value)} placeholder="Senha atual"
-            className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
+            className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
           <input type="password" value={newPass} onChange={e => setNewPass(e.target.value)} placeholder="Nova senha"
-            className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
+            className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
         </div>
         <button onClick={changePassword} disabled={!currentPass || !newPass}
-          className="bg-amber-600 hover:bg-amber-500 text-white text-sm font-bold px-6 py-2 rounded-xl transition-colors disabled:opacity-50">
+          className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 shadow-lg shadow-amber-500/25 text-white text-sm font-bold px-6 py-2 rounded-xl transition-colors disabled:opacity-50">
           Alterar Senha
         </button>
       </div>
@@ -647,25 +647,25 @@ const UsersTab: React.FC = () => {
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
-        <form onSubmit={addUser} className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50 space-y-4 h-fit">
+        <form onSubmit={addUser} className="bg-white/[0.02] backdrop-blur-xl shadow-2xl rounded-3xl hover:border-white/10 transition-colors p-6 border border-white/5 space-y-4 h-fit">
           <h3 className="font-bold text-white mb-2">Adicionar Novo</h3>
           <input type="email" required placeholder="E-mail" value={form.email} onChange={e => setForm({...form, email: e.target.value})}
-            className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
+            className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
           <input type="text" required placeholder="Senha" value={form.password} onChange={e => setForm({...form, password: e.target.value})}
-            className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
+            className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
           <select value={form.role} onChange={e => setForm({...form, role: e.target.value})}
-            className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500">
+            className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500">
             <option value="EDITOR">Editor</option>
             <option value="ADMIN">Administrador</option>
           </select>
-          <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-colors">
+          <button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-lg shadow-blue-500/25 text-white font-bold py-3 rounded-xl transition-colors">
             Adicionar
           </button>
         </form>
 
         <div className="md:col-span-2 space-y-3">
           {users.map(u => (
-            <div key={u.id} className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4 flex items-center justify-between">
+            <div key={u.id} className="bg-white/[0.02] backdrop-blur-xl shadow-2xl border border-white/5 rounded-xl p-4 flex items-center justify-between">
               <div>
                 <p className="font-bold text-white">{u.email}</p>
                 <div className="flex gap-2 items-center mt-1">
@@ -703,9 +703,9 @@ const LogsTab: React.FC = () => {
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-bold text-white">Log de Ações</h2>
-      <div className="overflow-x-auto rounded-2xl border border-slate-700/50 bg-slate-800/20">
+      <div className="overflow-x-auto rounded-3xl hover:border-white/10 transition-colors border border-white/5 bg-white/[0.02] backdrop-blur-xl shadow-2xl">
         <table className="w-full text-sm">
-          <thead className="bg-slate-800/50">
+          <thead className="bg-white/[0.02] backdrop-blur-xl shadow-2xl">
             <tr className="text-slate-400 text-left text-xs uppercase tracking-wider">
               <th className="px-4 py-3">Data/Hora</th>
               <th className="px-4 py-3">Usuário</th>
@@ -715,7 +715,7 @@ const LogsTab: React.FC = () => {
           </thead>
           <tbody className="divide-y divide-slate-700/30">
             {logs.map(log => (
-              <tr key={log.id} className="hover:bg-slate-800/30">
+              <tr key={log.id} className="hover:bg-white/[0.02] backdrop-blur-xl shadow-2xl">
                 <td className="px-4 py-3 text-slate-400 text-xs whitespace-nowrap">
                   {new Date(log.createdAt).toLocaleString('pt-BR')}
                 </td>
@@ -799,7 +799,7 @@ const DashboardTab: React.FC = () => {
           Visão Geral
         </h2>
 
-        <div className="flex flex-wrap items-center gap-3 bg-slate-800/50 p-2 rounded-xl border border-slate-700/50">
+        <div className="flex flex-wrap items-center gap-3 bg-white/[0.02] backdrop-blur-xl shadow-2xl p-2 rounded-xl border border-white/5">
           <button onClick={() => setPeriod('7d')} className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors ${period==='7d'?'bg-blue-600 text-white':'text-slate-400 hover:bg-slate-700'}`}>7 dias</button>
           <button onClick={() => setPeriod('30d')} className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors ${period==='30d'?'bg-blue-600 text-white':'text-slate-400 hover:bg-slate-700'}`}>30 dias</button>
           <button onClick={() => setPeriod('all')} className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors ${period==='all'?'bg-blue-600 text-white':'text-slate-400 hover:bg-slate-700'}`}>Tudo</button>
@@ -810,9 +810,9 @@ const DashboardTab: React.FC = () => {
           
           {period === 'custom' && (
             <div className="flex items-center gap-2 ml-2">
-              <input type="date" value={customStart} onChange={e=>setCustomStart(e.target.value)} className="bg-slate-900 border border-slate-700 text-white text-xs px-2 py-1.5 rounded-lg" />
+              <input type="date" value={customStart} onChange={e=>setCustomStart(e.target.value)} className="bg-black/20 backdrop-blur-md border border-white/10 text-white text-xs px-2 py-1.5 rounded-lg" />
               <span className="text-slate-500">até</span>
-              <input type="date" value={customEnd} onChange={e=>setCustomEnd(e.target.value)} className="bg-slate-900 border border-slate-700 text-white text-xs px-2 py-1.5 rounded-lg" />
+              <input type="date" value={customEnd} onChange={e=>setCustomEnd(e.target.value)} className="bg-black/20 backdrop-blur-md border border-white/10 text-white text-xs px-2 py-1.5 rounded-lg" />
             </div>
           )}
         </div>
@@ -820,7 +820,7 @@ const DashboardTab: React.FC = () => {
 
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/30 relative overflow-hidden">
+        <div className="bg-white/[0.02] backdrop-blur-xl shadow-2xl p-6 rounded-3xl hover:border-white/10 transition-colors border border-white/5 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-4 opacity-10">
             <span className="material-symbols-outlined text-6xl">payments</span>
           </div>
@@ -829,7 +829,7 @@ const DashboardTab: React.FC = () => {
           <p className="text-slate-500 text-xs mt-2 font-medium">{data.revenue.count} pedidos pagos</p>
         </div>
         
-        <div className="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/30 relative overflow-hidden">
+        <div className="bg-white/[0.02] backdrop-blur-xl shadow-2xl p-6 rounded-3xl hover:border-white/10 transition-colors border border-white/5 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-4 opacity-10">
             <span className="material-symbols-outlined text-6xl">shopping_cart</span>
           </div>
@@ -837,7 +837,7 @@ const DashboardTab: React.FC = () => {
           <h3 className="text-3xl font-black text-white">R$ {data.revenue.ticket.toFixed(2).replace('.',',')}</h3>
         </div>
 
-        <div className="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/30 flex justify-between items-center relative overflow-hidden">
+        <div className="bg-white/[0.02] backdrop-blur-xl shadow-2xl p-6 rounded-3xl hover:border-white/10 transition-colors border border-white/5 flex justify-between items-center relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-10">
               <span className="material-symbols-outlined text-6xl">pie_chart</span>
             </div>
@@ -863,7 +863,7 @@ const DashboardTab: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Gráfico Linear Timeline */}
-        <div className="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/30 lg:col-span-2">
+        <div className="bg-white/[0.02] backdrop-blur-xl shadow-2xl p-6 rounded-3xl hover:border-white/10 transition-colors border border-white/5 lg:col-span-2">
            <h3 className="text-white font-bold mb-6">Receita Diária</h3>
            <div className="h-72 w-full text-xs">
             <ResponsiveContainer width="100%" height="100%">
@@ -890,7 +890,7 @@ const DashboardTab: React.FC = () => {
         </div>
 
         {/* Gráfico Donut de Pagamentos */}
-        <div className="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/30 flex flex-col">
+        <div className="bg-white/[0.02] backdrop-blur-xl shadow-2xl p-6 rounded-3xl hover:border-white/10 transition-colors border border-white/5 flex flex-col">
            <h3 className="text-white font-bold mb-6">Receita por Método de Pagamento</h3>
            <div className="flex-1 flex items-center justify-center -mt-4 text-xs">
             {pieData.length > 0 ? (
@@ -922,7 +922,7 @@ const DashboardTab: React.FC = () => {
              )}
            </div>
            {/* Detalhamento */}
-           <div className="mt-4 pt-4 border-t border-slate-700/50 space-y-3">
+           <div className="mt-4 pt-4 border-t border-white/5 space-y-3">
              <div className="flex justify-between items-center text-sm">
                <span className="text-slate-400">PoloPag (PIX)</span>
                <span className="text-emerald-400 font-bold">R$ {data.paymentMethods.pix.total.toFixed(2)}</span>
@@ -964,7 +964,7 @@ export const AdminDashboard: React.FC = () => {
     else setInit(false);
   }, []);
 
-  if (init) return <div className="min-h-screen bg-[#0f172a] flex items-center justify-center text-slate-500">Carregando...</div>;
+  if (init) return <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0f172a] to-black flex items-center justify-center text-slate-500">Carregando...</div>;
   if (!authed) return <LoginScreen onLogin={fetchUser} />;
 
   const isEditor = user?.role === 'EDITOR';
@@ -981,14 +981,14 @@ export const AdminDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0f172a] flex">
+    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0f172a] to-black flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-[#1e293b] border-r border-slate-700/50 p-6 flex flex-col">
+      <aside className="w-64 bg-white/[0.02] backdrop-blur-2xl border-r border-white/5 p-6 flex flex-col">
         <div className="mb-10">
           <h1 className="text-xl font-black text-white">⚡ FastGram</h1>
           <p className="text-slate-500 text-xs mt-1">Painel Admin</p>
           {user && (
-            <div className="mt-4 p-3 bg-slate-800/50 rounded-xl border border-slate-700/50 border-dashed">
+            <div className="mt-4 p-3 bg-white/[0.02] backdrop-blur-xl shadow-2xl rounded-xl border border-white/5 border-dashed">
               <p className="text-white text-xs font-bold truncate" title={user.email}>{user.email}</p>
               <p className="text-blue-400 text-[10px] uppercase font-black tracking-wider mt-1">{user.role}</p>
             </div>
@@ -997,7 +997,7 @@ export const AdminDashboard: React.FC = () => {
         <nav className="space-y-2 flex-1">
           {tabs.map(t => (
             <button key={t.id} onClick={() => setTab(t.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-colors ${tab === t.id ? 'bg-blue-600/20 text-blue-400' : 'text-slate-400 hover:text-white hover:bg-slate-800/50'}`}>
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-colors ${tab === t.id ? 'bg-blue-600/20 text-blue-400' : 'text-slate-400 hover:text-white hover:bg-white/[0.02] backdrop-blur-xl shadow-2xl'}`}>
               <span className="material-symbols-outlined text-lg">{t.icon}</span>
               {t.label}
             </button>
