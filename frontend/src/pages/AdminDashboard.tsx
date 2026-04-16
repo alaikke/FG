@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { API_BASE } from '../config';
 
 const API = API_BASE;
@@ -743,11 +744,205 @@ const LogsTab: React.FC = () => {
   );
 };
 
+// ─── DASHBOARD TAB ───
+const DashboardTab: React.FC = () => {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [period, setPeriod] = useState('30d'); // 7d, 30d, all
+  const [customStart, setCustomStart] = useState('');
+  const [customEnd, setCustomEnd] = useState('');
+
+  const load = async () => {
+    setLoading(true);
+    let start = '';
+    let end = '';
+
+    if (period === 'custom') {
+      start = customStart;
+      end = customEnd;
+    } else if (period !== 'all') {
+      const days = period === '7d' ? 7 : 30;
+      const today = new Date();
+      end = today.toISOString().split('T')[0];
+      const past = new Date(today);
+      past.setDate(today.getDate() - days);
+      start = past.toISOString().split('T')[0];
+    }
+
+    let url = `${API}/api/admin/dashboard`;
+    if (start && end) url += `?startDate=${start}&endDate=${end}`;
+
+    const res = await authFetch(url);
+    if (res.ok) {
+      setData(await res.json());
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); }, [period, customStart, customEnd]);
+
+  if (loading && !data) return <div className="text-slate-400 py-10">Carregando métricas...</div>;
+  if (!data) return <div className="text-red-400 py-10">Erro ao carregar dados.</div>;
+
+  const PIX_COLOR = '#10b981'; // emerald-500
+  const CARD_COLOR = '#8b5cf6'; // violet-500
+  const pieData = [
+    { name: 'PIX', value: data.paymentMethods.pix.total, fill: PIX_COLOR },
+    { name: 'Cartão', value: data.paymentMethods.card.total, fill: CARD_COLOR },
+  ].filter(i => i.value > 0);
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <h2 className="text-xl font-bold text-white flex items-center gap-2">
+          <span className="material-symbols-outlined text-blue-400">monitoring</span>
+          Visão Geral
+        </h2>
+
+        <div className="flex flex-wrap items-center gap-3 bg-slate-800/50 p-2 rounded-xl border border-slate-700/50">
+          <button onClick={() => setPeriod('7d')} className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors ${period==='7d'?'bg-blue-600 text-white':'text-slate-400 hover:bg-slate-700'}`}>7 dias</button>
+          <button onClick={() => setPeriod('30d')} className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors ${period==='30d'?'bg-blue-600 text-white':'text-slate-400 hover:bg-slate-700'}`}>30 dias</button>
+          <button onClick={() => setPeriod('all')} className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors ${period==='all'?'bg-blue-600 text-white':'text-slate-400 hover:bg-slate-700'}`}>Tudo</button>
+          
+          <div className="h-6 w-px bg-slate-700 mx-1"></div>
+          
+          <button onClick={() => setPeriod('custom')} className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors ${period==='custom'?'bg-blue-600 text-white':'text-slate-400 hover:bg-slate-700'}`}>Personalizado</button>
+          
+          {period === 'custom' && (
+            <div className="flex items-center gap-2 ml-2">
+              <input type="date" value={customStart} onChange={e=>setCustomStart(e.target.value)} className="bg-slate-900 border border-slate-700 text-white text-xs px-2 py-1.5 rounded-lg" />
+              <span className="text-slate-500">até</span>
+              <input type="date" value={customEnd} onChange={e=>setCustomEnd(e.target.value)} className="bg-slate-900 border border-slate-700 text-white text-xs px-2 py-1.5 rounded-lg" />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* KPIs */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/30 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <span className="material-symbols-outlined text-6xl">payments</span>
+          </div>
+          <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Faturamento Total</p>
+          <h3 className="text-3xl font-black text-emerald-400">R$ {data.revenue.total.toFixed(2).replace('.',',')}</h3>
+          <p className="text-slate-500 text-xs mt-2 font-medium">{data.revenue.count} pedidos pagos</p>
+        </div>
+        
+        <div className="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/30 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <span className="material-symbols-outlined text-6xl">shopping_cart</span>
+          </div>
+          <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Ticket Médio</p>
+          <h3 className="text-3xl font-black text-white">R$ {data.revenue.ticket.toFixed(2).replace('.',',')}</h3>
+        </div>
+
+        <div className="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/30 flex justify-between items-center relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <span className="material-symbols-outlined text-6xl">pie_chart</span>
+            </div>
+            <div>
+              <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Origem Receita</p>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full" style={{backgroundColor: PIX_COLOR}}></span>
+                  <span className="text-white font-bold">{data.paymentMethods.pix.percentage}%</span>
+                  <span className="text-slate-500 text-xs">PIX</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full" style={{backgroundColor: CARD_COLOR}}></span>
+                  <span className="text-white font-bold">{data.paymentMethods.card.percentage}%</span>
+                  <span className="text-slate-500 text-xs">Cartão</span>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+
+      {/* Gráficos */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* Gráfico Linear Timeline */}
+        <div className="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/30 lg:col-span-2">
+           <h3 className="text-white font-bold mb-6">Receita Diária</h3>
+           <div className="h-72 w-full text-xs">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={data.timeline} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
+                <XAxis dataKey="date" stroke="#94a3b8" tickLine={false} axisLine={false} tickFormatter={(val) => val.split('-').reverse().slice(0,2).join('/')} />
+                <YAxis stroke="#94a3b8" tickLine={false} axisLine={false} tickFormatter={(val) => `R$${val}`} />
+                <RechartsTooltip 
+                  contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '12px' }}
+                  itemStyle={{ color: '#fff', fontWeight: 'bold' }}
+                  formatter={(value: any) => [`R$ ${Number(value || 0).toFixed(2)}`, 'Receita']}
+                  labelFormatter={(label: any) => `Data: ${String(label || '').split('-').reverse().join('/')}`}
+                />
+                <Area type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
+              </AreaChart>
+            </ResponsiveContainer>
+           </div>
+        </div>
+
+        {/* Gráfico Donut de Pagamentos */}
+        <div className="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/30 flex flex-col">
+           <h3 className="text-white font-bold mb-6">Receita por Método de Pagamento</h3>
+           <div className="flex-1 flex items-center justify-center -mt-4 text-xs">
+            {pieData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={240}>
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="value"
+                    stroke="none"
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip 
+                    contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.5)' }}
+                    formatter={(value: any) => `R$ ${Number(value || 0).toFixed(2)}`}
+                  />
+                  <Legend iconType="circle" verticalAlign="bottom" />
+                </PieChart>
+              </ResponsiveContainer>
+             ) : (
+                <div className="text-slate-500 font-medium">Nenhuma venda encontrada</div>
+             )}
+           </div>
+           {/* Detalhamento */}
+           <div className="mt-4 pt-4 border-t border-slate-700/50 space-y-3">
+             <div className="flex justify-between items-center text-sm">
+               <span className="text-slate-400">PoloPag (PIX)</span>
+               <span className="text-emerald-400 font-bold">R$ {data.paymentMethods.pix.total.toFixed(2)}</span>
+             </div>
+             <div className="flex justify-between items-center text-sm">
+               <span className="text-slate-400">Stripe (Cartão)</span>
+               <span className="text-violet-400 font-bold">R$ {data.paymentMethods.card.total.toFixed(2)}</span>
+             </div>
+           </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ─── MAIN DASHBOARD ───
 export const AdminDashboard: React.FC = () => {
   const [authed, setAuthed] = useState(false);
   const [user, setUser] = useState<{ email: string; role: string } | null>(null);
-  const [tab, setTab] = useState<'orders' | 'products' | 'settings' | 'users' | 'logs'>('orders');
+  const [tab, setTab] = useState<'dashboard' | 'orders' | 'products' | 'settings' | 'users' | 'logs'>('dashboard');
   const [init, setInit] = useState(true);
 
   const fetchUser = async () => {
@@ -775,6 +970,7 @@ export const AdminDashboard: React.FC = () => {
   const isEditor = user?.role === 'EDITOR';
 
   const tabs = [
+    { id: 'dashboard' as const, label: 'Dashboard', icon: 'monitoring' },
     { id: 'orders' as const, label: 'Pedidos', icon: 'receipt_long' },
     { id: 'products' as const, label: 'Produtos', icon: 'inventory_2' },
     { id: 'settings' as const, label: 'Configurações', icon: 'settings' },
@@ -815,6 +1011,7 @@ export const AdminDashboard: React.FC = () => {
 
       {/* Content */}
       <main className="flex-1 p-8 overflow-y-auto">
+        {tab === 'dashboard' && <DashboardTab />}
         {tab === 'orders' && <OrdersTab />}
         {tab === 'products' && <ProductsTab />}
         {tab === 'settings' && <SettingsTab role={user?.role || 'EDITOR'} />}

@@ -375,4 +375,101 @@ export default async function adminRoutes(fastify: FastifyInstance) {
     return { logs };
   });
 
+  // ─── DASHBOARD FINANCEIRO ───
+  fastify.get('/api/admin/dashboard', async (request: any, reply) => {
+    await checkAuth(request, reply);
+    
+    const { startDate, endDate } = request.query as any;
+
+    let dateFilter = {};
+    if (startDate && endDate) {
+      dateFilter = {
+        createdAt: {
+          gte: new Date(startDate),
+          lte: new Date(endDate + 'T23:59:59.999Z') // include the whole end day
+        }
+      };
+    }
+
+    // 1. Puxar apenas pedidos pagos para cálculo da receita financeira
+    const paidOrders = await prisma.order.findMany({
+      where: {
+        paymentStatus: 'PAID',
+        ...dateFilter
+      },
+      select: { price: true, txid: true, createdAt: true }
+    });
+
+    // 2. Métricas Gerais Financeiras
+    const totalOrdersPaid = paidOrders.length;
+    const totalRevenue = paidOrders.reduce((acc, o) => acc + (o.price || 0), 0);
+    const averageTicket = totalOrdersPaid > 0 ? (totalRevenue / totalOrdersPaid) : 0;
+
+    // 3. PIX vs Cartão (Somente base Pago)
+    let pixTotal = 0;
+    let cardTotal = 0;
+    let pixCount = 0;
+    let cardCount = 0;
+
+    paidOrders.forEach(o => {
+      // Regra de divisão: Se começou com pi_, é Stripe (Cartão). Caso contrário é PoloPag (PIX).
+      if (o.txid && o.txid.startsWith('pi_')) {
+        cardTotal += o.price || 0;
+        cardCount++;
+      } else {
+        pixTotal += o.price || 0;
+        pixCount++;
+      }
+    });
+
+    const pixPercentage = totalRevenue > 0 ? parseFloat(((pixTotal / totalRevenue) * 100).toFixed(1)) : 0;
+    const cardPercentage = totalRevenue > 0 ? parseFloat(((cardTotal / totalRevenue) * 100).toFixed(1)) : 0;
+
+    // 4. Agrupamento Diário Temporal (Para Gráfico Misto)
+    const timelineMap: Record<string, number> = {};
+    
+    paidOrders.forEach(o => {
+      // Evita o UTC bug usando locale pt-BR e formatando com hífens
+      const dateStr = o.createdAt.toLocaleDateString('en-CA'); // 'YYYY-MM-DD' nativo
+      if (!timelineMap[dateStr]) timelineMap[dateStr] = 0;
+      timelineMap[dateStr] += o.price || 0;
+    });
+
+    // Converter para array para o recharts
+    const timelineChart = Object.keys(timelineMap)
+      .sort((a,b) => new Date(a).getTime() - new Date(b).getTime())
+      .map(key => ({
+        date: key,
+        revenue: timelineMap[key]
+      }));
+
+    // 5. Contar Status para Funil Geral
+    const allFilteredOrders = await prisma.order.findMany({
+      where: { ...dateFilter },
+      select: { paymentStatus: true }
+    });
+
+    const statusCounts = { PAID: 0, PENDING: 0, ERROR: 0, CANCELLED: 0 };
+    allFilteredOrders.forEach(o => {
+      if (o.paymentStatus === 'PAID') statusCounts.PAID++;
+      else if (o.paymentStatus === 'PENDING') statusCounts.PENDING++;
+      else if (o.paymentStatus === 'ERROR') statusCounts.ERROR++;
+      else if (o.paymentStatus === 'CANCELLED') statusCounts.CANCELLED++;
+    });
+
+    return {
+      revenue: {
+        total: totalRevenue,
+        count: totalOrdersPaid,
+        ticket: averageTicket
+      },
+      paymentMethods: {
+        pix: { total: pixTotal, count: pixCount, percentage: pixPercentage },
+        card: { total: cardTotal, count: cardCount, percentage: cardPercentage }
+      },
+      timeline: timelineChart,
+      statusFunnel: statusCounts
+    };
+  });
+
 }
