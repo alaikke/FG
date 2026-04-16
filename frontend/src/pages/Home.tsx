@@ -42,13 +42,8 @@ export const Home: React.FC = () => {
       setIsSearching(true);
       const timer = setTimeout(async () => {
         try {
-          let realName = username.charAt(0).toUpperCase() + username.slice(1).toLowerCase();
-          const randomStr = (Math.random() * (50 - 2) + 2).toFixed(1).replace('.', ',');
-          let realFollowers = `${randomStr}k`;
-          let realAvatar = `https://ui-avatars.com/api/?name=${username}&background=random&color=fff&size=128&bold=true`;
-
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 4000); // 4 seconds max wait
+          const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 seconds max wait
 
           const response = await fetch(`${API_BASE}/api/instagram/${username}`, {
             signal: controller.signal
@@ -60,32 +55,35 @@ export const Home: React.FC = () => {
             
             if (data && data.length > 0) {
               const profile = data[0];
-              if (profile.fullName) realName = profile.fullName;
+              
+              let realName = profile.fullName || username.charAt(0).toUpperCase() + username.slice(1).toLowerCase();
+              let realFollowers = "0";
               if (profile.followersCount !== undefined) {
                 realFollowers = profile.followersCount.toLocaleString('pt-BR');
               }
+              
+              let realAvatar = `https://ui-avatars.com/api/?name=${username}&background=random&color=fff&size=128&bold=true`;
               if (profile.profilePicUrlHD || profile.profilePicUrl) {
                 const rawUrl = profile.profilePicUrlHD || profile.profilePicUrl;
                 // Proxy reverso em tempo real para anular a trava "Cross-Origin-Resource-Policy: same-origin" do Instagram!
                 realAvatar = `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}`;
               }
+
+              setFoundProfile({
+                name: realName.trim(),
+                followers: realFollowers,
+                avatar: realAvatar
+              });
+              return;
             }
           }
 
-          setFoundProfile({
-            name: realName.trim(),
-            followers: realFollowers,
-            avatar: realAvatar
-          });
+          // Se a resposta vier vazia ou não ok, apagamos perfis falsos
+          setFoundProfile(null);
 
         } catch (e) {
-          console.error("Falha ou timeout na chamada da API, ativando fallback resiliente.");
-          const randomStrFb = (Math.random() * (50 - 2) + 2).toFixed(1).replace('.', ',');
-          setFoundProfile({
-            name: username.charAt(0).toUpperCase() + username.slice(1).toLowerCase(),
-            followers: `${randomStrFb}k`,
-            avatar: `https://ui-avatars.com/api/?name=${username}&background=random&color=fff&size=128&bold=true`
-          });
+          console.error("Falha ou timeout na chamada da API.");
+          setFoundProfile(null);
         } finally {
           setIsSearching(false);
         }
