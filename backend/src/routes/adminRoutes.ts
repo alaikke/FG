@@ -1,63 +1,100 @@
-import { FastifyInstance } from 'fastify';
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '../server';
-import * as fs from 'fs';
-import * as path from 'path';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'fastgram_super_secret_key_123';
 
 export default async function adminRoutes(fastify: FastifyInstance) {
 
   // Auth middleware helper
+  // Extrai o token, valida e injeta req.user
   const checkAuth = async (request: any, reply: any) => {
     const authHeader = request.headers['authorization'];
     if (!authHeader) return reply.status(401).send({ error: 'Token não fornecido' });
 
     const token = authHeader.replace('Bearer ', '');
-    const settings = await prisma.siteSettings.findUnique({ where: { id: 'main' } });
-    
-    // Token simples = base64 da senha
-    const expectedToken = Buffer.from(settings?.adminPassword || 'admin123').toString('base64');
-    if (token !== expectedToken) return reply.status(401).send({ error: 'Senha incorreta' });
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET) as any;
+      const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
+      if (!user) return reply.status(401).send({ error: 'Usuário não encontrado' });
+      request.user = user;
+    } catch (e) {
+      return reply.status(401).send({ error: 'Token inválido ou expirado' });
+    }
+  };
+
+  // Helper de log de ações
+  const logAction = async (userId: string, action: string, details?: string) => {
+    await prisma.adminLog.create({
+      data: {
+        userId,
+        action,
+        details
+      }
+    });
   };
 
   // ─── LOGIN ───
   fastify.post('/api/admin/login', async (request, reply) => {
-    const { password } = request.body as any;
-    const settings = await prisma.siteSettings.findUnique({ where: { id: 'main' } });
+    const { email, password } = request.body as any;
     
-    if (password !== (settings?.adminPassword || 'admin123')) {
-      return reply.status(401).send({ error: 'Senha incorreta' });
+    if (!email || !password) {
+      return reply.status(400).send({ error: 'Email e senha são obrigatórios' });
     }
 
-    const token = Buffer.from(password).toString('base64');
-    return { token, message: 'Login realizado com sucesso' };
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return reply.status(401).send({ error: 'Credenciais inválidas' });
+    }
+
+    const passMatch = await bcrypt.compare(password, user.password);
+    if (!passMatch) {
+      return reply.status(401).send({ error: 'Credenciais inválidas' });
+    }
+
+    const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+    
+    await logAction(user.id, 'LOGIN', 'Login realizado no painel');
+
+    return { token, user: { id: user.id, email: user.email, role: user.role }, message: 'Login realizado com sucesso' };
   });
 
-  // ─── ALTERAR SENHA ───
-  fastify.put('/api/admin/password', async (request, reply) => {
+  // ─── DADOS DO AUTENTICADO ───
+  fastify.get('/api/admin/me', async (request: any, reply) => {
+    await checkAuth(request, reply);
+    return { user: { id: request.user.id, email: request.user.email, role: request.user.role } };
+  });
+
+  // ─── ALTERAR SENHA (DO USUÁRIO LOGADO) ───
+  fastify.put('/api/admin/password', async (request: any, reply) => {
     await checkAuth(request, reply);
     const { currentPassword, newPassword } = request.body as any;
     
-    const settings = await prisma.siteSettings.findUnique({ where: { id: 'main' } });
-    if (currentPassword !== (settings?.adminPassword || 'admin123')) {
+    const passMatch = await bcrypt.compare(currentPassword, request.user.password);
+    if (!passMatch) {
       return reply.status(400).send({ error: 'Senha atual incorreta' });
     }
 
-    await prisma.siteSettings.update({
-      where: { id: 'main' },
-      data: { adminPassword: newPassword }
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    await prisma.user.update({
+      where: { id: request.user.id },
+      data: { password: hashedNewPassword }
     });
 
-    const newToken = Buffer.from(newPassword).toString('base64');
-    return { token: newToken, message: 'Senha alterada com sucesso' };
+    await logAction(request.user.id, 'CHANGE_PASSWORD', 'Usuário alterou a própria senha');
+
+    return { success: true, message: 'Senha alterada com sucesso' };
   });
 
   // ─── PEDIDOS ───
-  fastify.get('/api/admin/orders', async (request, reply) => {
+  fastify.get('/api/admin/orders', async (request: any, reply) => {
     await checkAuth(request, reply);
     const orders = await prisma.order.findMany({ orderBy: { createdAt: 'desc' } });
     return { orders };
   });
 
-  fastify.put('/api/admin/orders/:id/notes', async (request, reply) => {
+  fastify.put('/api/admin/orders/:id/notes', async (request: any, reply) => {
     await checkAuth(request, reply);
     const { id } = request.params as any;
     const { notes } = request.body as any;
@@ -67,19 +104,22 @@ export default async function adminRoutes(fastify: FastifyInstance) {
         where: { id },
         data: { adminNotes: notes }
       });
+      await logAction(request.user.id, 'EDIT_ORDER_NOTES', `Editou anotações do pedido ID ${id}`);
       return { success: true, adminNotes: order.adminNotes };
     } catch (e: any) {
       return reply.status(500).send({ error: 'Erro ao salvar notas', details: e.message });
     }
   });
 
-  fastify.post('/api/admin/orders/:id/retry', async (request, reply) => {
+  fastify.post('/api/admin/orders/:id/retry', async (request: any, reply) => {
     await checkAuth(request, reply);
     const { id } = request.params as any;
     
     const order = await prisma.order.findUnique({ where: { id } });
     if (!order) return reply.status(404).send({ error: 'Pedido não encontrado' });
     
+    await logAction(request.user.id, 'RETRY_ORDER', `Reenvio de pedido ID ${id} acionado`);
+
     try {
       const BARATO_API_URL = process.env.PROVIDER_API_URL || 'https://baratosociais.com/api/v2';
       const BARATO_API_KEY = process.env.PROVIDER_API_KEY;
@@ -138,13 +178,12 @@ export default async function adminRoutes(fastify: FastifyInstance) {
   });
 
   // ─── PRODUTOS ───
-  fastify.get('/api/admin/products', async (request, reply) => {
+  fastify.get('/api/admin/products', async (request: any, reply) => {
     await checkAuth(request, reply);
     const products = await prisma.product.findMany({ orderBy: { sortOrder: 'asc' } });
     return { products: products.map(p => ({ ...p, features: JSON.parse(p.features) })) };
   });
 
-  // Produtos públicos (sem auth, para o frontend)
   fastify.get('/api/products', async () => {
     const products = await prisma.product.findMany({
       where: { active: true },
@@ -153,7 +192,7 @@ export default async function adminRoutes(fastify: FastifyInstance) {
     return { products: products.map(p => ({ ...p, features: JSON.parse(p.features) })) };
   });
 
-  fastify.post('/api/admin/products', async (request, reply) => {
+  fastify.post('/api/admin/products', async (request: any, reply) => {
     await checkAuth(request, reply);
     const { followers, subtitle, price, icon, tag, features, sortOrder } = request.body as any;
     
@@ -166,10 +205,13 @@ export default async function adminRoutes(fastify: FastifyInstance) {
         sortOrder: sortOrder || 0
       }
     });
+
+    await logAction(request.user.id, 'CREATE_PRODUCT', `Criou produto: ${followers} Seguidores`);
+
     return { product: { ...product, features: JSON.parse(product.features) } };
   });
 
-  fastify.put('/api/admin/products/:id', async (request, reply) => {
+  fastify.put('/api/admin/products/:id', async (request: any, reply) => {
     await checkAuth(request, reply);
     const { id } = request.params as any;
     const { followers, subtitle, price, icon, tag, features, sortOrder, active } = request.body as any;
@@ -187,18 +229,22 @@ export default async function adminRoutes(fastify: FastifyInstance) {
         ...(active !== undefined && { active }),
       }
     });
+
+    await logAction(request.user.id, 'EDIT_PRODUCT', `Editou produto ID: ${id}`);
+
     return { product: { ...product, features: JSON.parse(product.features) } };
   });
 
-  fastify.delete('/api/admin/products/:id', async (request, reply) => {
+  fastify.delete('/api/admin/products/:id', async (request: any, reply) => {
     await checkAuth(request, reply);
     const { id } = request.params as any;
     await prisma.product.delete({ where: { id } });
+    await logAction(request.user.id, 'DELETE_PRODUCT', `Deletou produto ID: ${id}`);
     return { deleted: true };
   });
 
   // ─── CONFIGURAÇÕES (Tags + Logo) ───
-  fastify.get('/api/admin/settings', async (request, reply) => {
+  fastify.get('/api/admin/settings', async (request: any, reply) => {
     await checkAuth(request, reply);
     const settings = await prisma.siteSettings.findUnique({ where: { id: 'main' } });
     return { 
@@ -209,7 +255,6 @@ export default async function adminRoutes(fastify: FastifyInstance) {
     };
   });
 
-  // Settings públicos (para injetar tags no frontend)
   fastify.get('/api/settings/public', async () => {
     const settings = await prisma.siteSettings.findUnique({ where: { id: 'main' } });
     return { 
@@ -220,7 +265,7 @@ export default async function adminRoutes(fastify: FastifyInstance) {
     };
   });
 
-  fastify.put('/api/admin/settings', async (request, reply) => {
+  fastify.put('/api/admin/settings', async (request: any, reply) => {
     await checkAuth(request, reply);
     const { googleTagId, metaPixelId, googleAdsConversionId } = request.body as any;
     
@@ -232,6 +277,9 @@ export default async function adminRoutes(fastify: FastifyInstance) {
         ...(googleAdsConversionId !== undefined && { googleAdsConversionId }),
       }
     });
+
+    await logAction(request.user.id, 'EDIT_SETTINGS', 'Editou as tags de rastreamento do painel');
+
     return { 
       googleTagId: settings.googleTagId, 
       metaPixelId: settings.metaPixelId,
@@ -240,8 +288,12 @@ export default async function adminRoutes(fastify: FastifyInstance) {
   });
 
   // ─── UPLOAD DE LOGO ───
-  fastify.put('/api/admin/logo', async (request, reply) => {
+  fastify.put('/api/admin/logo', async (request: any, reply) => {
     await checkAuth(request, reply);
+    if (request.user.role !== 'ADMIN') {
+      return reply.status(403).send({ error: 'Acesso negado: Apenas administradores podem mudar a logo' });
+    }
+
     const { logoBase64 } = request.body as any;
     
     if (logoBase64 === undefined) return reply.status(400).send({ error: 'Nenhuma informação enviada' });
@@ -250,6 +302,77 @@ export default async function adminRoutes(fastify: FastifyInstance) {
       where: { id: 'main' },
       data: { logoUrl: logoBase64 ? logoBase64 : '' }
     });
+
+    await logAction(request.user.id, 'EDIT_LOGO', logoBase64 ? 'Alterou a Logo' : 'Removeu a Logo');
+
     return { logoUrl: logoBase64 || '', message: 'Logo atualizada com sucesso' };
   });
+
+  // ─── GERENCIAMENTO DE USUÁRIOS (ADMIN ONLY) ───
+  fastify.get('/api/admin/users', async (request: any, reply) => {
+    await checkAuth(request, reply);
+    if (request.user.role !== 'ADMIN') return reply.status(403).send({ error: 'Acesso negado' });
+
+    const users = await prisma.user.findMany({ select: { id: true, email: true, role: true, createdAt: true } });
+    return { users };
+  });
+
+  fastify.post('/api/admin/users', async (request: any, reply) => {
+    await checkAuth(request, reply);
+    if (request.user.role !== 'ADMIN') return reply.status(403).send({ error: 'Acesso negado' });
+
+    const { email, password, role } = request.body as any;
+    if (!email || !password) return reply.status(400).send({ error: 'Email e senha são obrigatórios' });
+
+    const exists = await prisma.user.findUnique({ where: { email } });
+    if (exists) return reply.status(400).send({ error: 'E-mail agendado já está em uso' });
+
+    const hashed = await bcrypt.hash(password, 10);
+    const newUser = await prisma.user.create({
+      data: { email, password: hashed, role: role || 'EDITOR' },
+      select: { id: true, email: true, role: true, createdAt: true }
+    });
+
+    await logAction(request.user.id, 'CREATE_USER', `Administrador criou o usuário ${email} (${newUser.role})`);
+
+    return { user: newUser };
+  });
+
+  fastify.delete('/api/admin/users/:id', async (request: any, reply) => {
+    await checkAuth(request, reply);
+    if (request.user.role !== 'ADMIN') return reply.status(403).send({ error: 'Acesso negado' });
+
+    const { id } = request.params as any;
+    if (id === request.user.id) return reply.status(400).send({ error: 'Não é possível excluir o próprio usuário' });
+
+    const u = await prisma.user.findUnique({ where: { id } });
+    if (u) {
+      await prisma.user.delete({ where: { id } });
+      await logAction(request.user.id, 'DELETE_USER', `Usuário ${u.email} excluído`);
+    }
+
+    return { success: true };
+  });
+
+  // ─── ABA DE LOGS (ADMIN ONLY) ───
+  fastify.get('/api/admin/logs', async (request: any, reply) => {
+    await checkAuth(request, reply);
+    if (request.user.role !== 'ADMIN') return reply.status(403).send({ error: 'Acesso negado' });
+
+    // Puxamos com infos primitivas, idealmente faríamos um JOIN, o Prisma permite `include` mas User pode ser deletado, 
+    // então guardamos `userId` cru... No entanto podemos puxar os users tbm.
+    const logsRaw = await prisma.adminLog.findMany({ orderBy: { createdAt: 'desc' }, take: 100 });
+    
+    // Buscar todos os usuários para cruzar email
+    const users = await prisma.user.findMany({ select: { id: true, email: true } });
+    const userMap = new Map(users.map(u => [u.id, u.email]));
+
+    const logs = logsRaw.map(l => ({
+      ...l,
+      userEmail: userMap.get(l.userId) || `(Deletado) ID: ${l.userId}`
+    }));
+
+    return { logs };
+  });
+
 }

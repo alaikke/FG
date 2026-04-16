@@ -2,8 +2,10 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 dotenv.config();
+
 
 export const fastify = Fastify({ 
   logger: true,
@@ -68,6 +70,22 @@ fastify.register(stripeRoutes);
 // Inicialização do Servidor
 const start = async () => {
   try {
+    // Seed default admin
+    const adminExists = await prisma.user.findFirst({ where: { role: 'ADMIN' } });
+    if (!adminExists) {
+      const email = 'alaikke@gmail.com';
+      const password = 'Mmoney00!';
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await prisma.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          role: 'ADMIN' // Administrador padrão
+        }
+      });
+      console.log('✔ Usuário admin criado automaticamente: ', email);
+    }
+
     await fastify.listen({ port: 3333, host: '0.0.0.0' });
     fastify.log.info(`Servidor backend rodando na porta 3333`);
   } catch (err) {

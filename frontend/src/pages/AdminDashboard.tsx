@@ -14,6 +14,7 @@ const authFetch = (url: string, opts: any = {}) => {
 
 // ─── LOGIN ───
 const LoginScreen: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,7 +24,7 @@ const LoginScreen: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
     setLoading(true); setError('');
     const res = await fetch(`${API}/api/admin/login`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password })
+      body: JSON.stringify({ email, password })
     });
     const data = await res.json();
     if (res.ok) {
@@ -42,12 +43,21 @@ const LoginScreen: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
           <h1 className="text-2xl font-black text-white">⚡ FastGram</h1>
           <p className="text-slate-400 text-sm mt-1">Painel Administrativo</p>
         </div>
-        <input
-          type="password" value={password} onChange={e => setPassword(e.target.value)}
-          placeholder="Senha de acesso"
-          className="w-full bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 outline-none focus:border-blue-500 transition-colors"
-        />
-        {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+        <div className="space-y-4">
+          <input
+            type="email" value={email} onChange={e => setEmail(e.target.value)}
+            placeholder="E-mail de acesso"
+            required
+            className="w-full bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 outline-none focus:border-blue-500 transition-colors"
+          />
+          <input
+            type="password" value={password} onChange={e => setPassword(e.target.value)}
+            placeholder="Senha secreta"
+            required
+            className="w-full bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 outline-none focus:border-blue-500 transition-colors"
+          />
+        </div>
+        {error && <p className="text-red-400 text-sm text-center font-bold">{error}</p>}
         <button type="submit" disabled={loading}
           className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50">
           {loading ? 'Entrando...' : 'Entrar'}
@@ -448,7 +458,7 @@ const ProductsTab: React.FC = () => {
 };
 
 // ─── SETTINGS TAB ───
-const SettingsTab: React.FC = () => {
+const SettingsTab: React.FC<{ role: string }> = ({ role }) => {
   const [googleTagId, setGoogleTagId] = useState('');
   const [googleAdsConversionId, setGoogleAdsConversionId] = useState('');
   const [metaPixelId, setMetaPixelId] = useState('');
@@ -482,6 +492,7 @@ const SettingsTab: React.FC = () => {
       const base64 = reader.result as string;
       const res = await authFetch(`${API}/api/admin/logo`, { method: 'PUT', body: JSON.stringify({ logoBase64: base64 }) });
       if (res.ok) { setLogoUrl(base64); setMsg('Logo atualizada!'); setTimeout(() => setMsg(''), 3000); }
+      else { alert('Apenas admins podem mudar a logo.'); }
     };
     reader.readAsDataURL(file);
   };
@@ -490,6 +501,7 @@ const SettingsTab: React.FC = () => {
     if (!confirm('Tem certeza que deseja remover a logo e voltar para o texto e ícone padrão?')) return;
     const res = await authFetch(`${API}/api/admin/logo`, { method: 'PUT', body: JSON.stringify({ logoBase64: null }) });
     if (res.ok) { setLogoUrl(''); setMsg('Logo removida!'); setTimeout(() => setMsg(''), 3000); }
+    else { alert('Apenas admins podem mudar a logo.'); }
   };
 
   const changePassword = async () => {
@@ -498,7 +510,6 @@ const SettingsTab: React.FC = () => {
     });
     const data = await res.json();
     if (res.ok) {
-      localStorage.setItem('fg_admin_token', data.token);
       setPassMsg('Senha alterada com sucesso!'); setCurrentPass(''); setNewPass('');
     } else {
       setPassMsg(data.error);
@@ -510,7 +521,7 @@ const SettingsTab: React.FC = () => {
     <div className="space-y-8 max-w-2xl">
       {msg && <div className="bg-green-500/20 text-green-400 border border-green-500/30 px-4 py-3 rounded-xl text-sm font-bold">{msg}</div>}
 
-      {/* Logo */}
+      {/* Logo (Apenas ADMIN pode editar, mas EDITOR pode ver) */}
       <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50 space-y-4">
         <h3 className="text-white font-bold flex items-center gap-2">
           <span className="material-symbols-outlined text-blue-400">image</span> Logo do Site
@@ -521,21 +532,23 @@ const SettingsTab: React.FC = () => {
           ) : (
             <div className="h-16 w-32 bg-slate-900 rounded-xl flex items-center justify-center text-slate-500 text-xs">Sem logo</div>
           )}
-          <div>
-            <input type="file" ref={fileRef} accept="image/*" onChange={handleLogoUpload} className="hidden" />
-            <div className="flex items-center gap-2">
-              <button onClick={() => fileRef.current?.click()}
-                className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors">
-                Alterar Logo
-              </button>
-              {logoUrl && (
-                <button onClick={handleRemoveLogo}
-                  className="bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors">
-                  Remover
+          {role === 'ADMIN' && (
+            <div>
+              <input type="file" ref={fileRef} accept="image/*" onChange={handleLogoUpload} className="hidden" />
+              <div className="flex items-center gap-2">
+                <button onClick={() => fileRef.current?.click()}
+                  className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors">
+                  Alterar Logo
                 </button>
-              )}
+                {logoUrl && (
+                  <button onClick={handleRemoveLogo}
+                    className="bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors">
+                    Remover
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -566,10 +579,10 @@ const SettingsTab: React.FC = () => {
         </button>
       </div>
 
-      {/* Password */}
+      {/* Password do seu próprio usuário */}
       <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50 space-y-4">
         <h3 className="text-white font-bold flex items-center gap-2">
-          <span className="material-symbols-outlined text-blue-400">lock</span> Alterar Senha
+          <span className="material-symbols-outlined text-blue-400">lock</span> Alterar Minha Senha
         </h3>
         {passMsg && <p className={`text-sm font-bold ${passMsg.includes('sucesso') ? 'text-green-400' : 'text-red-400'}`}>{passMsg}</p>}
         <div className="space-y-3">
@@ -587,17 +600,188 @@ const SettingsTab: React.FC = () => {
   );
 };
 
+// ─── USUÁRIOS TAB ───
+const UsersTab: React.FC = () => {
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState({ email: '', password: '', role: 'EDITOR' });
+
+  const load = () => {
+    authFetch(`${API}/api/admin/users`)
+      .then(r => r.json())
+      .then(d => { setUsers(d.users || []); setLoading(false); });
+  };
+  useEffect(() => { load(); }, []);
+
+  const addUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await authFetch(`${API}/api/admin/users`, {
+      method: 'POST', body: JSON.stringify(form)
+    });
+    if (res.ok) {
+      setForm({ email: '', password: '', role: 'EDITOR' });
+      load();
+    } else {
+      const data = await res.json();
+      alert(data.error);
+    }
+  };
+
+  const deleteUser = async (id: string) => {
+    if (!confirm('Excluir este usuário?')) return;
+    const res = await authFetch(`${API}/api/admin/users/${id}`, { method: 'DELETE' });
+    if (!res.ok) {
+      const data = await res.json();
+      alert(data.error);
+    }
+    load();
+  };
+
+  if (loading) return <div className="text-slate-400">Carregando usuários...</div>;
+
+  return (
+    <div className="space-y-8 max-w-4xl">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-white">Equipe ({users.length})</h2>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-6">
+        <form onSubmit={addUser} className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50 space-y-4 h-fit">
+          <h3 className="font-bold text-white mb-2">Adicionar Novo</h3>
+          <input type="email" required placeholder="E-mail" value={form.email} onChange={e => setForm({...form, email: e.target.value})}
+            className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
+          <input type="text" required placeholder="Senha" value={form.password} onChange={e => setForm({...form, password: e.target.value})}
+            className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
+          <select value={form.role} onChange={e => setForm({...form, role: e.target.value})}
+            className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500">
+            <option value="EDITOR">Editor</option>
+            <option value="ADMIN">Administrador</option>
+          </select>
+          <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-colors">
+            Adicionar
+          </button>
+        </form>
+
+        <div className="md:col-span-2 space-y-3">
+          {users.map(u => (
+            <div key={u.id} className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4 flex items-center justify-between">
+              <div>
+                <p className="font-bold text-white">{u.email}</p>
+                <div className="flex gap-2 items-center mt-1">
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${u.role === 'ADMIN' ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
+                    {u.role}
+                  </span>
+                  <span className="text-slate-500 text-xs">Criado em {new Date(u.createdAt).toLocaleDateString()}</span>
+                </div>
+              </div>
+              <button onClick={() => deleteUser(u.id)} className="text-slate-400 hover:text-red-400 p-2">
+                <span className="material-symbols-outlined">delete</span>
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── LOGS TAB ───
+const LogsTab: React.FC = () => {
+  const [logs, setLogs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const load = () => {
+    authFetch(`${API}/api/admin/logs`)
+      .then(r => r.json())
+      .then(d => { setLogs(d.logs || []); setLoading(false); });
+  };
+  useEffect(() => { load(); }, []);
+
+  if (loading) return <div className="text-slate-400">Carregando logs...</div>;
+
+  return (
+    <div className="space-y-6">
+      <h2 className="text-xl font-bold text-white">Log de Ações</h2>
+      <div className="overflow-x-auto rounded-2xl border border-slate-700/50 bg-slate-800/20">
+        <table className="w-full text-sm">
+          <thead className="bg-slate-800/50">
+            <tr className="text-slate-400 text-left text-xs uppercase tracking-wider">
+              <th className="px-4 py-3">Data/Hora</th>
+              <th className="px-4 py-3">Usuário</th>
+              <th className="px-4 py-3">Ação</th>
+              <th className="px-4 py-3">Detalhes</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-700/30">
+            {logs.map(log => (
+              <tr key={log.id} className="hover:bg-slate-800/30">
+                <td className="px-4 py-3 text-slate-400 text-xs whitespace-nowrap">
+                  {new Date(log.createdAt).toLocaleString('pt-BR')}
+                </td>
+                <td className="px-4 py-3 text-blue-400 font-medium text-xs">
+                  {log.userEmail}
+                </td>
+                <td className="px-4 py-3">
+                  <span className="bg-slate-700 text-slate-300 px-2 py-1 rounded text-xs font-bold font-mono">
+                    {log.action}
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-slate-300 text-xs">
+                  {log.details || '-'}
+                </td>
+              </tr>
+            ))}
+            {logs.length === 0 && (
+              <tr>
+                <td colSpan={4} className="text-center py-6 text-slate-500">Nenhum log registrado.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
 // ─── MAIN DASHBOARD ───
 export const AdminDashboard: React.FC = () => {
-  const [authed, setAuthed] = useState(!!localStorage.getItem('fg_admin_token'));
-  const [tab, setTab] = useState<'orders' | 'products' | 'settings'>('orders');
+  const [authed, setAuthed] = useState(false);
+  const [user, setUser] = useState<{ email: string; role: string } | null>(null);
+  const [tab, setTab] = useState<'orders' | 'products' | 'settings' | 'users' | 'logs'>('orders');
+  const [init, setInit] = useState(true);
 
-  if (!authed) return <LoginScreen onLogin={() => setAuthed(true)} />;
+  const fetchUser = async () => {
+    const res = await authFetch(`${API}/api/admin/me`);
+    if (res.ok) {
+      const data = await res.json();
+      setUser(data.user);
+      setAuthed(true);
+    } else {
+      localStorage.removeItem('fg_admin_token');
+      setAuthed(false);
+    }
+    setInit(false);
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem('fg_admin_token');
+    if (token) fetchUser();
+    else setInit(false);
+  }, []);
+
+  if (init) return <div className="min-h-screen bg-[#0f172a] flex items-center justify-center text-slate-500">Carregando...</div>;
+  if (!authed) return <LoginScreen onLogin={fetchUser} />;
+
+  const isEditor = user?.role === 'EDITOR';
 
   const tabs = [
     { id: 'orders' as const, label: 'Pedidos', icon: 'receipt_long' },
     { id: 'products' as const, label: 'Produtos', icon: 'inventory_2' },
     { id: 'settings' as const, label: 'Configurações', icon: 'settings' },
+    ...(!isEditor ? [
+      { id: 'users' as const, label: 'Usuários', icon: 'group' },
+      { id: 'logs' as const, label: 'Histórico', icon: 'history' },
+    ] : [])
   ];
 
   return (
@@ -607,6 +791,12 @@ export const AdminDashboard: React.FC = () => {
         <div className="mb-10">
           <h1 className="text-xl font-black text-white">⚡ FastGram</h1>
           <p className="text-slate-500 text-xs mt-1">Painel Admin</p>
+          {user && (
+            <div className="mt-4 p-3 bg-slate-800/50 rounded-xl border border-slate-700/50 border-dashed">
+              <p className="text-white text-xs font-bold truncate" title={user.email}>{user.email}</p>
+              <p className="text-blue-400 text-[10px] uppercase font-black tracking-wider mt-1">{user.role}</p>
+            </div>
+          )}
         </div>
         <nav className="space-y-2 flex-1">
           {tabs.map(t => (
@@ -617,7 +807,7 @@ export const AdminDashboard: React.FC = () => {
             </button>
           ))}
         </nav>
-        <button onClick={() => { localStorage.removeItem('fg_admin_token'); setAuthed(false); }}
+        <button onClick={() => { localStorage.removeItem('fg_admin_token'); setAuthed(false); setUser(null); }}
           className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red-400 hover:bg-red-500/10 transition-colors">
           <span className="material-symbols-outlined text-lg">logout</span> Sair
         </button>
@@ -627,7 +817,9 @@ export const AdminDashboard: React.FC = () => {
       <main className="flex-1 p-8 overflow-y-auto">
         {tab === 'orders' && <OrdersTab />}
         {tab === 'products' && <ProductsTab />}
-        {tab === 'settings' && <SettingsTab />}
+        {tab === 'settings' && <SettingsTab role={user?.role || 'EDITOR'} />}
+        {tab === 'users' && !isEditor && <UsersTab />}
+        {tab === 'logs' && !isEditor && <LogsTab />}
       </main>
     </div>
   );

@@ -58,7 +58,23 @@ model SiteSettings {
   googleAdsConversionId String? // Rótulo de conversão. Ex: AW-18092090954/E_S8CIyDr5wcEMrM_bJD
   metaPixelId     String?  // Meta/Facebook Pixel ID
   logoUrl         String?  // URL ou base64 da logo
-  adminPassword   String  @default("MmoneyDin00!")
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   // hashed password
+  role      String   @default("EDITOR") // "ADMIN" ou "EDITOR"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AdminLog {
+  id        String   @id @default(uuid())
+  userId    String
+  action    String
+  details   String?  @db.Text
+  createdAt DateTime @default(now())
 }
