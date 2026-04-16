@@ -38,10 +38,10 @@ const LoginScreen: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#09090b]">
+    <div className="min-h-screen flex items-center justify-center bg-[#09090b]" style={{ fontFamily: "'Montserrat', sans-serif" }}>
       <form onSubmit={handleLogin} className="bg-[#18181b] p-10 rounded-3xl shadow-2xl shadow-black/40 w-full max-w-sm space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl font-black text-white">⚡ FastGram</h1>
+          <h1 className="text-2xl font-black text-white">FastGram</h1>
           <p className="text-zinc-400 text-sm mt-1">Painel Administrativo</p>
         </div>
         <div className="space-y-4">
@@ -795,7 +795,6 @@ const DashboardTab: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <h2 className="text-xl font-bold text-white flex items-center gap-2">
-          <span className="material-symbols-outlined text-blue-400">monitoring</span>
           Visão Geral
         </h2>
 
@@ -970,7 +969,7 @@ export const AdminDashboard: React.FC = () => {
   const isEditor = user?.role === 'EDITOR';
 
   const tabs = [
-    { id: 'dashboard' as const, label: 'Dashboard', icon: 'monitoring' },
+    { id: 'dashboard' as const, label: 'Dashboard', icon: 'dashboard' },
     { id: 'orders' as const, label: 'Pedidos', icon: 'receipt_long' },
     { id: 'products' as const, label: 'Produtos', icon: 'inventory_2' },
     { id: 'settings' as const, label: 'Configurações', icon: 'settings' },
@@ -981,11 +980,11 @@ export const AdminDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#09090b] flex">
+    <div className="min-h-screen bg-[#09090b] flex" style={{ fontFamily: "'Montserrat', sans-serif" }}>
       {/* Sidebar */}
       <aside className="w-64 bg-[#18181b] border-r border-zinc-800 p-6 flex flex-col">
         <div className="mb-10">
-          <h1 className="text-xl font-black text-white">⚡ FastGram</h1>
+          <h1 className="text-xl font-black text-white">FastGram</h1>
           <p className="text-zinc-500 text-xs mt-1">Painel Admin</p>
           {user && (
             <div className="mt-4 p-3 bg-[#18181b] rounded-xl border border-zinc-800 border-dashed">
