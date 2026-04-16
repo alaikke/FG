@@ -47,7 +47,13 @@ export const Home: React.FC = () => {
           let realFollowers = `${randomStr}k`;
           let realAvatar = `https://ui-avatars.com/api/?name=${username}&background=random&color=fff&size=128&bold=true`;
 
-          const response = await fetch(`${API_BASE}/api/instagram/${username}`);
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 4000); // 4 seconds max wait
+
+          const response = await fetch(`${API_BASE}/api/instagram/${username}`, {
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
           
           if (response.ok) {
             const data = await response.json();
@@ -73,7 +79,7 @@ export const Home: React.FC = () => {
           });
 
         } catch (e) {
-          console.error("Falha na chamada da API, ativando fallback resiliente.", e);
+          console.error("Falha ou timeout na chamada da API, ativando fallback resiliente.");
           const randomStrFb = (Math.random() * (50 - 2) + 2).toFixed(1).replace('.', ',');
           setFoundProfile({
             name: username.charAt(0).toUpperCase() + username.slice(1).toLowerCase(),
@@ -83,7 +89,7 @@ export const Home: React.FC = () => {
         } finally {
           setIsSearching(false);
         }
-      }, 800);
+      }, 600); // debounce otimizado para 600ms
       return () => clearTimeout(timer);
     } else {
       setFoundProfile(null);

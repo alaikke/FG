@@ -42,8 +42,19 @@ fastify.get('/api/health', async (request, reply) => {
   return { status: 'ok', message: 'FastGram Backend Ligado!' };
 });
 
+const profileCache = new Map<string, { data: any, timestamp: number }>();
+const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 horas
+
 fastify.get('/api/instagram/:username', async (request: any, reply) => {
   const { username } = request.params;
+  const lowerUser = (username || '').toLowerCase();
+  
+  // Limpar cache expirado (opcional, ou apenas validar on read)
+  const cached = profileCache.get(lowerUser);
+  if (cached && (Date.now() - cached.timestamp < CACHE_TTL)) {
+    return reply.send(cached.data);
+  }
+
   const apifyToken = process.env.APIFY_TOKEN || process.env.VITE_APIFY_TOKEN || ("apify_api_" + "pPKo4WIGQ8J3CeQElQAA6ZraxWB3js0dKHvh");
   try {
     const response = await fetch(`https://api.apify.com/v2/acts/apify~instagram-profile-scraper/run-sync-get-dataset-items?token=${apifyToken}`, {
@@ -51,7 +62,17 @@ fastify.get('/api/instagram/:username', async (request: any, reply) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ usernames: [username] })
     });
+    
+    if (!response.ok) {
+      throw new Error('Apify API failed');
+    }
+    
     const data = await response.json();
+    
+    if (data && data.length > 0) {
+      profileCache.set(lowerUser, { data, timestamp: Date.now() });
+    }
+    
     return reply.send(data);
   } catch (error) {
     return reply.code(500).send({ error: 'Failed to fetch Instagram profile' });
