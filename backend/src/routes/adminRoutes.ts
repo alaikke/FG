@@ -203,6 +203,7 @@ export default async function adminRoutes(fastify: FastifyInstance) {
     const settings = await prisma.siteSettings.findUnique({ where: { id: 'main' } });
     return { 
       googleTagId: settings?.googleTagId || '',
+      googleAdsConversionId: settings?.googleAdsConversionId || '',
       metaPixelId: settings?.metaPixelId || '',
       logoUrl: settings?.logoUrl || '',
     };
@@ -213,6 +214,7 @@ export default async function adminRoutes(fastify: FastifyInstance) {
     const settings = await prisma.siteSettings.findUnique({ where: { id: 'main' } });
     return { 
       googleTagId: settings?.googleTagId || '',
+      googleAdsConversionId: settings?.googleAdsConversionId || '',
       metaPixelId: settings?.metaPixelId || '',
       logoUrl: settings?.logoUrl || '',
     };
@@ -220,16 +222,21 @@ export default async function adminRoutes(fastify: FastifyInstance) {
 
   fastify.put('/api/admin/settings', async (request, reply) => {
     await checkAuth(request, reply);
-    const { googleTagId, metaPixelId } = request.body as any;
+    const { googleTagId, metaPixelId, googleAdsConversionId } = request.body as any;
     
     const settings = await prisma.siteSettings.update({
       where: { id: 'main' },
       data: {
         ...(googleTagId !== undefined && { googleTagId }),
         ...(metaPixelId !== undefined && { metaPixelId }),
+        ...(googleAdsConversionId !== undefined && { googleAdsConversionId }),
       }
     });
-    return { googleTagId: settings.googleTagId, metaPixelId: settings.metaPixelId };
+    return { 
+      googleTagId: settings.googleTagId, 
+      metaPixelId: settings.metaPixelId,
+      googleAdsConversionId: settings.googleAdsConversionId
+    };
   });
 
   // ─── UPLOAD DE LOGO ───

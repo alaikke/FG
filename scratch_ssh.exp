@@ -1,0 +1,6 @@
+#!/usr/bin/expect -f
+set timeout 60
+spawn ssh -o StrictHostKeyChecking=no root@31.97.83.80 "cd /var/www/fastgram && git remote update && git status -sb && pm2 status && pm2 logs fastgram-api --lines 50 --nostream"
+expect "*?assword:*"
+send "RiO+NQ45lk),cuhM\r"
+expect eof

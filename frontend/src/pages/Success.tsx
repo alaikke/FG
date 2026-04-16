@@ -42,14 +42,19 @@ export const Success: React.FC = () => {
         }
         
         // Google Ads Purchase Event (GTAG) - Código de Conversão
-        if ((window as any).gtag) {
-          (window as any).gtag('event', 'conversion', {
-            'send_to': 'AW-18092090954/E_S8CIyDr5wcEMrM_bJD',
-            'value': priceVal,
-            'currency': 'BRL',
-            'transaction_id': finalOrderId
-          });
-        }
+        fetch(`${API_BASE}/api/settings/public`)
+          .then(res => res.json())
+          .then(settings => {
+            if ((window as any).gtag && settings.googleAdsConversionId) {
+              (window as any).gtag('event', 'conversion', {
+                'send_to': settings.googleAdsConversionId,
+                'value': priceVal,
+                'currency': 'BRL',
+                'transaction_id': finalOrderId
+              });
+            }
+          })
+          .catch(() => {});
       }
       setPixelFired(true);
     }

@@ -1,0 +1,6 @@
+#!/usr/bin/expect -f
+set timeout 20
+spawn ssh -o StrictHostKeyChecking=no -o PasswordAuthentication=yes root@31.97.83.80 "mkdir -p ~/.ssh && echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAqzTbiJIYHCdKrX+7xh/8dIvw9Ou9RXf6XAQfpPW6yM deploy@fastgram' >> ~/.ssh/authorized_keys && chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys"
+expect "*?assword:*"
+send "RiO+NQ45lk),cuhM\r"
+expect eof

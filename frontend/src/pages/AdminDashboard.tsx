@@ -450,6 +450,7 @@ const ProductsTab: React.FC = () => {
 // ─── SETTINGS TAB ───
 const SettingsTab: React.FC = () => {
   const [googleTagId, setGoogleTagId] = useState('');
+  const [googleAdsConversionId, setGoogleAdsConversionId] = useState('');
   const [metaPixelId, setMetaPixelId] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [currentPass, setCurrentPass] = useState('');
@@ -460,12 +461,15 @@ const SettingsTab: React.FC = () => {
 
   useEffect(() => {
     authFetch(`${API}/api/admin/settings`).then(r => r.json()).then(d => {
-      setGoogleTagId(d.googleTagId || ''); setMetaPixelId(d.metaPixelId || ''); setLogoUrl(d.logoUrl || '');
+      setGoogleTagId(d.googleTagId || ''); 
+      setGoogleAdsConversionId(d.googleAdsConversionId || '');
+      setMetaPixelId(d.metaPixelId || ''); 
+      setLogoUrl(d.logoUrl || '');
     });
   }, []);
 
   const saveTags = async () => {
-    await authFetch(`${API}/api/admin/settings`, { method: 'PUT', body: JSON.stringify({ googleTagId, metaPixelId }) });
+    await authFetch(`${API}/api/admin/settings`, { method: 'PUT', body: JSON.stringify({ googleTagId, googleAdsConversionId, metaPixelId }) });
     setMsg('Tags salvas com sucesso!');
     setTimeout(() => setMsg(''), 3000);
   };
@@ -544,6 +548,11 @@ const SettingsTab: React.FC = () => {
           <div>
             <label className="text-xs text-slate-400 font-bold block mb-1">Google Tag (GTM / GA4)</label>
             <input value={googleTagId} onChange={e => setGoogleTagId(e.target.value)} placeholder="GTM-XXXXXXX ou G-XXXXXXX"
+              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
+          </div>
+          <div>
+            <label className="text-xs text-slate-400 font-bold block mb-1">Google Ads / Rótulo Conversão (Opcional)</label>
+            <input value={googleAdsConversionId} onChange={e => setGoogleAdsConversionId(e.target.value)} placeholder="AW-12345/AbCde..."
               className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-blue-500" />
           </div>
           <div>
