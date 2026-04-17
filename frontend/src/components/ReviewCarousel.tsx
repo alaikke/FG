@@ -71,7 +71,7 @@ export const ReviewCarousel: React.FC = () => {
   };
 
   return (
-    <section className="py-24 bg-slate-50 mx-4 md:mx-8 rounded-[3rem] my-10 overflow-hidden relative">
+    <section className="py-12 bg-slate-50 mx-4 md:mx-8 rounded-[3rem] my-5 overflow-hidden relative">
       {/* Decorative Blob */}
       <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
         <span className="material-symbols-outlined text-[20rem]">format_quote</span>

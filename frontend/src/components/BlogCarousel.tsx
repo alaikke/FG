@@ -19,7 +19,7 @@ export const BlogCarousel: React.FC = () => {
   };
 
   return (
-    <section className="py-24 max-w-7xl mx-auto px-8 relative">
+    <section className="py-12 max-w-7xl mx-auto px-8 relative">
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
         <div>
           <h2 className="text-4xl md:text-5xl font-extrabold font-headline text-slate-900 mb-4">

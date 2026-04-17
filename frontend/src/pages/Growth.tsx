@@ -89,7 +89,7 @@ export const Growth: React.FC = () => {
       <ReviewCarousel />
 
       {/* CTA Section */}
-      <section className="py-32 px-8 max-w-7xl mx-auto text-center" id="cta">
+      <section className="py-16 px-8 max-w-7xl mx-auto text-center" id="cta">
         <div className="bg-inverse-surface text-surface rounded-[4rem] p-16 md:p-24 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-12 opacity-10">
             <span className="material-symbols-outlined text-[15rem]">auto_graph</span>
