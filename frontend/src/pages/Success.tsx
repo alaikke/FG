@@ -30,6 +30,27 @@ export const Success: React.FC = () => {
       if (typeof window !== 'undefined') {
         const priceVal = Number(orderData.price || 0);
         
+        // Google Tag Manager DataLayer Push
+        (window as any).dataLayer = (window as any).dataLayer || [];
+        // Clear previous ecommerce object to prevent duplicate data
+        (window as any).dataLayer.push({ ecommerce: null });
+        (window as any).dataLayer.push({
+          event: 'purchase',
+          value: priceVal,
+          order_id: finalOrderId,
+          username: orderData.instagramUser || '',
+          ecommerce: {
+            transaction_id: finalOrderId,
+            value: priceVal,
+            currency: 'BRL',
+            items: [{
+              item_name: orderData.followersCount ? `${orderData.followersCount} Seguidores` : 'Pacote',
+              price: priceVal,
+              quantity: 1
+            }]
+          }
+        });
+        
         // Meta Pixel Purchase Event
         if ((window as any).fbq) {
           (window as any).fbq('track', 'Purchase', {
