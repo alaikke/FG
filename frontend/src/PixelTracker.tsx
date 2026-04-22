@@ -14,18 +14,36 @@ export const PixelTracker: React.FC = () => {
     fetch(`${API_BASE}/api/settings/public`)
       .then(r => r.json())
       .then(data => {
-        // Google Tag (gtag.js)
+        // Google Tags (GTM, GA4, Google Ads)
         if (data.googleTagId) {
-          const tags = data.googleTagId.split(',').map((t: string) => t.trim()).filter(Boolean);
-          if (tags.length > 0) {
-            const primaryId = tags[0];
+          const allTags = data.googleTagId.split(',').map((t: string) => t.trim()).filter(Boolean);
+          
+          const gtmTags = allTags.filter((t: string) => t.toUpperCase().startsWith('GTM-'));
+          const gtagTags = allTags.filter((t: string) => !t.toUpperCase().startsWith('GTM-'));
+
+          // Inject GTM Containers
+          gtmTags.forEach((gtmId: string) => {
+            const gtmScript = document.createElement('script');
+            gtmScript.innerHTML = `
+              (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+              })(window,document,'script','dataLayer','${gtmId}');
+            `;
+            document.head.appendChild(gtmScript);
+          });
+
+          // Inject gtag.js for G- and AW- tags
+          if (gtagTags.length > 0) {
+            const primaryId = gtagTags[0];
             const script = document.createElement('script');
             script.src = `https://www.googletagmanager.com/gtag/js?id=${primaryId}`;
             script.async = true;
             document.head.appendChild(script);
 
             const inlineScript = document.createElement('script');
-            let configCalls = tags.map((id: string) => `gtag('config', '${id}');`).join('\n            ');
+            let configCalls = gtagTags.map((id: string) => `gtag('config', '${id}');`).join('\n            ');
             inlineScript.innerHTML = `
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
@@ -35,7 +53,7 @@ export const PixelTracker: React.FC = () => {
             document.head.appendChild(inlineScript);
             
             // Salva na window para usarmos nos page_views depois
-            (window as any)._activeGtms = tags;
+            (window as any)._activeGtms = gtagTags;
           }
         }
 
