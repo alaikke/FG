@@ -943,6 +943,16 @@ export const AdminDashboard: React.FC = () => {
   const [user, setUser] = useState<{ email: string; role: string } | null>(null);
   const [tab, setTab] = useState<'dashboard' | 'orders' | 'products' | 'settings' | 'users' | 'logs'>('dashboard');
   const [init, setInit] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(typeof window !== 'undefined' ? window.innerWidth > 768 : true);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) setSidebarOpen(false);
+      else setSidebarOpen(true);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const fetchUser = async () => {
     const res = await authFetch(`${API}/api/admin/me`);
@@ -980,42 +990,92 @@ export const AdminDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#09090b] flex" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+    <div className="min-h-screen bg-[#09090b] flex overflow-hidden relative" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+      
+      {/* Mobile Overlay */}
+      {!sidebarOpen && (
+        <div 
+          className="md:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity opacity-0 pointer-events-none"
+        />
+      )}
+      {sidebarOpen && (
+        <div 
+          onClick={() => setSidebarOpen(false)}
+          className="md:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity opacity-100"
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 bg-[#18181b] border-r border-zinc-800 p-6 flex flex-col">
-        <div className="mb-10">
-          <h1 className="text-xl font-black text-white">FastGram</h1>
-          <p className="text-zinc-500 text-xs mt-1">Painel Admin</p>
-          {user && (
-            <div className="mt-4 p-3 bg-[#18181b] rounded-xl border border-zinc-800 border-dashed">
+      <aside className={`fixed md:relative z-50 h-full bg-[#18181b] border-r border-zinc-800 flex flex-col transition-all duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64 md:translate-x-0 md:w-20'}`}>
+        <div className={`py-6 flex flex-col h-full ${sidebarOpen ? 'px-6' : 'px-4 md:items-center'}`}>
+          <div className="mb-10 flex items-center justify-between">
+            <div className={`transition-opacity duration-300 ${sidebarOpen ? 'opacity-100' : 'md:hidden'}`}>
+              <h1 className="text-xl font-black text-white">FastGram</h1>
+              <p className="text-zinc-500 text-xs mt-1">Painel Admin</p>
+            </div>
+            {!sidebarOpen && (
+              <h1 className="text-xl font-black text-white hidden md:block" title="FastGram">FG</h1>
+            )}
+            
+            <button 
+              onClick={() => setSidebarOpen(false)} 
+              className="md:hidden text-zinc-400 hover:text-white p-1"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          
+          {user && sidebarOpen && (
+            <div className="mb-6 p-3 bg-[#18181b] rounded-xl border border-zinc-800 border-dashed">
               <p className="text-white text-xs font-bold truncate" title={user.email}>{user.email}</p>
               <p className="text-blue-400 text-[10px] uppercase font-black tracking-wider mt-1">{user.role}</p>
             </div>
           )}
+
+          <nav className="space-y-2 flex-1">
+            {tabs.map(t => (
+              <button key={t.id} onClick={() => { setTab(t.id); if (typeof window !== 'undefined' && window.innerWidth <= 768) setSidebarOpen(false); }}
+                className={`w-full flex items-center gap-3 rounded-xl text-sm font-bold transition-colors ${sidebarOpen ? 'px-4 py-3' : 'justify-center p-3'} ${tab === t.id ? 'bg-blue-600/20 text-blue-400' : 'text-zinc-400 hover:text-white hover:bg-[#18181b]'}`}
+                title={!sidebarOpen ? t.label : undefined}
+              >
+                <span className="material-symbols-outlined text-lg">{t.icon}</span>
+                {sidebarOpen && <span>{t.label}</span>}
+              </button>
+            ))}
+          </nav>
+          <button onClick={() => { localStorage.removeItem('fg_admin_token'); setAuthed(false); setUser(null); }}
+            className={`w-full flex items-center gap-3 rounded-xl text-sm font-bold text-red-400 hover:bg-red-500/10 transition-colors mt-auto ${sidebarOpen ? 'px-4 py-3' : 'justify-center p-3'}`}
+            title={!sidebarOpen ? 'Sair' : undefined}
+          >
+            <span className="material-symbols-outlined text-lg">logout</span>
+            {sidebarOpen && <span>Sair</span>}
+          </button>
         </div>
-        <nav className="space-y-2 flex-1">
-          {tabs.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-colors ${tab === t.id ? 'bg-blue-600/20 text-blue-400' : 'text-zinc-400 hover:text-white hover:bg-[#18181b]'}`}>
-              <span className="material-symbols-outlined text-lg">{t.icon}</span>
-              {t.label}
-            </button>
-          ))}
-        </nav>
-        <button onClick={() => { localStorage.removeItem('fg_admin_token'); setAuthed(false); setUser(null); }}
-          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red-400 hover:bg-red-500/10 transition-colors">
-          <span className="material-symbols-outlined text-lg">logout</span> Sair
-        </button>
       </aside>
 
       {/* Content */}
-      <main className="flex-1 p-8 overflow-y-auto">
-        {tab === 'dashboard' && <DashboardTab />}
-        {tab === 'orders' && <OrdersTab />}
-        {tab === 'products' && <ProductsTab />}
-        {tab === 'settings' && <SettingsTab role={user?.role || 'EDITOR'} />}
-        {tab === 'users' && !isEditor && <UsersTab />}
-        {tab === 'logs' && !isEditor && <LogsTab />}
+      <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+        {/* Header Toggle */}
+        <header className="bg-[#09090b] border-b border-zinc-800/50 p-4 flex items-center gap-4">
+          <button 
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-colors flex items-center justify-center"
+          >
+            <span className="material-symbols-outlined">{sidebarOpen ? 'menu_open' : 'menu'}</span>
+          </button>
+          <h2 className="text-white font-bold text-lg hidden sm:block">
+            {tabs.find(t => t.id === tab)?.label || 'Dashboard'}
+          </h2>
+        </header>
+        
+        <div className="flex-1 p-4 md:p-8 overflow-y-auto">
+          {tab === 'dashboard' && <DashboardTab />}
+          {tab === 'orders' && <OrdersTab />}
+          {tab === 'products' && <ProductsTab />}
+          {tab === 'settings' && <SettingsTab role={user?.role || 'EDITOR'} />}
+          {tab === 'users' && !isEditor && <UsersTab />}
+          {tab === 'logs' && !isEditor && <LogsTab />}
+        </div>
       </main>
     </div>
   );
