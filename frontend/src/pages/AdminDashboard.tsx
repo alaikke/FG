@@ -76,6 +76,7 @@ const OrdersTab: React.FC = () => {
   const [retrying, setRetrying] = useState<string | null>(null);
   const [adminNotes, setAdminNotes] = useState<string>('');
   const [savingNotes, setSavingNotes] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'PAID' | 'PENDING'>('ALL');
 
   const load = () => {
     authFetch(`${API}/api/admin/orders`).then(r => r.json()).then(d => { setOrders(d.orders || []); setLoading(false); });
@@ -139,12 +140,28 @@ const OrdersTab: React.FC = () => {
     WAITING_PAYMENT: 'bg-slate-500/20 text-zinc-400', ERROR: 'bg-red-500/20 text-red-500', CANCELLED: 'bg-red-500/20 text-red-500'
   };
 
+  const statusTranslations: Record<string, string> = {
+    PAID: 'Pago', PENDING: 'Pendente', IN_PROGRESS: 'Em Processo',
+    COMPLETED: 'Concluído', WAITING_PAYMENT: 'Aguard. Pag.',
+    ERROR: 'Erro', CANCELLED: 'Cancelado'
+  };
+
+  const filteredOrders = orders.filter(o => {
+    if (statusFilter === 'ALL') return true;
+    return o.paymentStatus === statusFilter;
+  });
+
   if (loading) return <div className="text-center text-zinc-400 py-20">Carregando pedidos...</div>;
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-white">Pedidos ({orders.length})</h2>
+        <h2 className="text-xl font-bold text-white">Pedidos ({filteredOrders.length})</h2>
+        <div className="flex gap-2 bg-[#18181b] p-1.5 rounded-xl border border-zinc-800">
+          <button onClick={() => setStatusFilter('ALL')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors ${statusFilter === 'ALL' ? 'bg-blue-600 text-white' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}>Todos</button>
+          <button onClick={() => setStatusFilter('PAID')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors ${statusFilter === 'PAID' ? 'bg-green-600 text-white' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}>Pagos</button>
+          <button onClick={() => setStatusFilter('PENDING')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors ${statusFilter === 'PENDING' ? 'bg-amber-600 text-white' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}>Pendentes</button>
+        </div>
       </div>
       <div className="overflow-x-auto rounded-3xl hover:border-zinc-700/50 transition-colors border border-zinc-800">
         <table className="w-full text-sm">
@@ -162,7 +179,7 @@ const OrdersTab: React.FC = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-800">
-            {orders.map(o => (
+            {filteredOrders.map(o => (
               <tr key={o.id} className="hover:bg-[#18181b] transition-colors">
                 <td className="px-4 py-3 font-mono text-zinc-300 text-xs">
                   {o.id.substring(0, 8)}
@@ -176,15 +193,18 @@ const OrdersTab: React.FC = () => {
                 <td className="px-4 py-3 text-emerald-400 font-bold text-xs">R$ {o.price.toFixed(2).replace('.', ',')}</td>
                 <td className="px-4 py-3">
                   <span className={`px-2 py-1 rounded-lg text-xs font-bold ${statusColor[o.paymentStatus] || 'bg-slate-700 text-zinc-300'}`}>
-                    {o.paymentStatus}
+                    {statusTranslations[o.paymentStatus] || o.paymentStatus}
                   </span>
                 </td>
                 <td className="px-4 py-3">
                   <span className={`px-2 py-1 rounded-lg text-xs font-bold ${statusColor[o.deliveryStatus] || 'bg-slate-700 text-zinc-300'}`}>
-                    {o.deliveryStatus}
+                    {statusTranslations[o.deliveryStatus] || o.deliveryStatus}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-zinc-400 text-xs">{new Date(o.createdAt).toLocaleDateString('pt-BR')}</td>
+                <td className="px-4 py-3 text-zinc-400 text-xs">
+                  <div>{new Date(o.createdAt).toLocaleDateString('pt-BR')}</div>
+                  <div className="text-[10px] text-zinc-500 mt-0.5">{new Date(o.createdAt).toLocaleTimeString('pt-BR')}</div>
+                </td>
                 <td className="px-4 py-3 text-right">
                   <button 
                     onClick={() => openOrder(o)}
@@ -240,7 +260,7 @@ const OrdersTab: React.FC = () => {
                   <div className="bg-[#18181b] p-4 rounded-xl border border-zinc-800">
                     <span className="text-zinc-500 text-xs font-bold uppercase tracking-wider block mb-1">Pagamento (PIX)</span>
                     <span className={`px-3 py-1 rounded-lg text-xs font-bold inline-block mt-1 ${statusColor[selectedOrder.paymentStatus] || 'bg-slate-700 text-zinc-300'}`}>
-                      {selectedOrder.paymentStatus}
+                      {statusTranslations[selectedOrder.paymentStatus] || selectedOrder.paymentStatus}
                     </span>
                     <p className="text-zinc-500 text-xs mt-2 font-mono truncate" title={selectedOrder.txid}>ID: {selectedOrder.txid || 'N/A'}</p>
                   </div>
@@ -248,7 +268,7 @@ const OrdersTab: React.FC = () => {
                     <div>
                       <span className="text-zinc-500 text-xs font-bold uppercase tracking-wider block mb-1">Fornecedor (SMM)</span>
                       <span className={`px-3 py-1 rounded-lg text-xs font-bold inline-block mt-1 ${statusColor[selectedOrder.deliveryStatus] || 'bg-slate-700 text-zinc-300'}`}>
-                        {selectedOrder.deliveryStatus}
+                        {statusTranslations[selectedOrder.deliveryStatus] || selectedOrder.deliveryStatus}
                       </span>
                       <p className="text-zinc-500 text-xs mt-2 font-mono">Ref: {selectedOrder.providerOrderId || 'N/A'}</p>
                     </div>
