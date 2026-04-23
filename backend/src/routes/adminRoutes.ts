@@ -177,6 +177,54 @@ export default async function adminRoutes(fastify: FastifyInstance) {
     }
   });
 
+  // ─── CLIENTES ───
+  fastify.get('/api/admin/clients', async (request: any, reply) => {
+    await checkAuth(request, reply);
+    const orders = await prisma.order.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+
+    const clientsMap = new Map<string, any>();
+
+    for (const order of orders) {
+      const email = order.clientEmail.toLowerCase();
+      if (!clientsMap.has(email)) {
+        clientsMap.set(email, {
+          name: order.clientName,
+          email: email,
+          phone: order.clientPhone,
+          instagram: order.instagramUser,
+          ltv: 0,
+          ordersCount: 0,
+          orders: [],
+          firstOrderAt: order.createdAt,
+          lastOrderAt: order.createdAt,
+        });
+      }
+
+      const client = clientsMap.get(email);
+      client.orders.push({
+        id: order.id,
+        price: order.price,
+        followersCount: order.followersCount,
+        paymentStatus: order.paymentStatus,
+        createdAt: order.createdAt
+      });
+      if (order.paymentStatus === 'PAID') {
+        client.ltv += order.price;
+      }
+      client.ordersCount += 1;
+      
+      if (new Date(order.createdAt) < new Date(client.firstOrderAt)) client.firstOrderAt = order.createdAt;
+      if (new Date(order.createdAt) > new Date(client.lastOrderAt)) client.lastOrderAt = order.createdAt;
+    }
+
+    // Sort by LTV descending
+    const clients = Array.from(clientsMap.values()).sort((a, b) => b.ltv - a.ltv);
+
+    return { clients };
+  });
+
   // ─── PRODUTOS ───
   fastify.get('/api/admin/products', async (request: any, reply) => {
     await checkAuth(request, reply);

@@ -764,6 +764,133 @@ const LogsTab: React.FC = () => {
   );
 };
 
+// ─── CLIENTES TAB ───
+const ClientsTab: React.FC = () => {
+  const [clients, setClients] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedClient, setSelectedClient] = useState<any>(null);
+
+  const load = () => {
+    authFetch(`${API}/api/admin/clients`)
+      .then(r => r.json())
+      .then(d => { setClients(d.clients || []); setLoading(false); });
+  };
+  useEffect(() => { load(); }, []);
+
+  const formatPhone = (phone: string) => {
+    return phone.replace(/\D/g, ''); // Remove all non-numeric characters
+  };
+
+  const statusTranslations: Record<string, string> = {
+    PAID: 'Pago', PENDING: 'Pendente', IN_PROGRESS: 'Em Processo',
+    COMPLETED: 'Concluído', WAITING_PAYMENT: 'Aguard. Pag.',
+    ERROR: 'Erro', CANCELLED: 'Cancelado'
+  };
+
+  const statusColor: Record<string, string> = {
+    PAID: 'bg-green-500/20 text-green-400', PENDING: 'bg-amber-500/20 text-amber-400',
+    IN_PROGRESS: 'bg-blue-500/20 text-blue-400', COMPLETED: 'bg-emerald-500/20 text-emerald-400',
+    WAITING_PAYMENT: 'bg-slate-500/20 text-zinc-400', ERROR: 'bg-red-500/20 text-red-500', CANCELLED: 'bg-red-500/20 text-red-500'
+  };
+
+  if (loading) return <div className="text-center text-zinc-400 py-20">Carregando clientes...</div>;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-white">Clientes ({clients.length})</h2>
+      </div>
+      <div className="overflow-x-auto rounded-3xl hover:border-zinc-700/50 transition-colors border border-zinc-800">
+        <table className="w-full text-sm">
+          <thead className="bg-[#18181b]">
+            <tr className="text-zinc-400 text-left text-xs uppercase tracking-wider">
+              <th className="px-4 py-3">Cliente</th>
+              <th className="px-4 py-3">Contato</th>
+              <th className="px-4 py-3">Instagram</th>
+              <th className="px-4 py-3">Pedidos</th>
+              <th className="px-4 py-3">LTV</th>
+              <th className="px-4 py-3">Primeiro Pedido</th>
+              <th className="px-4 py-3 text-right">Ações</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-zinc-800">
+            {clients.map((c, i) => (
+              <tr key={i} className="hover:bg-[#18181b] transition-colors">
+                <td className="px-4 py-3">
+                  <p className="text-white font-medium text-xs">{c.name}</p>
+                  <p className="text-zinc-500 text-xs">{c.email}</p>
+                </td>
+                <td className="px-4 py-3">
+                  <a href={`https://wa.me/${formatPhone(c.phone)}`} target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 font-medium text-xs flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[14px]">chat</span> {c.phone}
+                  </a>
+                </td>
+                <td className="px-4 py-3 text-blue-400 font-medium text-xs">@{c.instagram}</td>
+                <td className="px-4 py-3 text-white text-xs font-bold">{c.ordersCount}</td>
+                <td className="px-4 py-3 text-emerald-400 font-bold text-xs">R$ {c.ltv.toFixed(2).replace('.', ',')}</td>
+                <td className="px-4 py-3 text-zinc-400 text-xs">{new Date(c.firstOrderAt).toLocaleDateString('pt-BR')}</td>
+                <td className="px-4 py-3 text-right">
+                  <button 
+                    onClick={() => setSelectedClient(c)}
+                    className="bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors"
+                  >
+                    Ver Histórico
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Client History Modal */}
+      {selectedClient && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#09090b]/80 backdrop-blur-sm">
+          <div className="bg-[#18181b] w-full max-w-3xl max-h-[90vh] rounded-3xl shadow-2xl shadow-black/40 flex flex-col overflow-hidden border border-zinc-800">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-zinc-800 bg-[#18181b]">
+              <div>
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  <span className="material-symbols-outlined text-blue-400">person</span>
+                  Histórico - {selectedClient.name}
+                </h3>
+                <p className="text-emerald-400 font-bold text-sm mt-1">LTV Total: R$ {selectedClient.ltv.toFixed(2).replace('.', ',')}</p>
+              </div>
+              <button onClick={() => setSelectedClient(null)} className="p-2 text-zinc-400 hover:text-white bg-zinc-800 hover:bg-zinc-800 rounded-xl transition-colors">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="space-y-4">
+                <h4 className="text-white font-bold mb-4">Pedidos Anteriores ({selectedClient.orders.length})</h4>
+                <div className="divide-y divide-zinc-800 border border-zinc-800 rounded-2xl overflow-hidden">
+                  {selectedClient.orders.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((o: any) => (
+                    <div key={o.id} className="p-4 bg-[#09090b] flex items-center justify-between hover:bg-[#18181b] transition-colors">
+                      <div>
+                        <p className="text-white font-bold text-sm">{o.followersCount.toLocaleString()} Seguidores</p>
+                        <p className="text-zinc-500 text-xs mt-1 font-mono">ID: {o.id.substring(0, 8)}</p>
+                        <p className="text-zinc-500 text-xs mt-0.5">{new Date(o.createdAt).toLocaleString('pt-BR')}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-emerald-400 font-bold text-sm mb-1">R$ {o.price.toFixed(2).replace('.', ',')}</p>
+                        <span className={`px-2 py-1 rounded-lg text-[10px] font-bold ${statusColor[o.paymentStatus] || 'bg-slate-700 text-zinc-300'}`}>
+                          {statusTranslations[o.paymentStatus] || o.paymentStatus}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ─── DASHBOARD TAB ───
 const DashboardTab: React.FC = () => {
   const [data, setData] = useState<any>(null);
@@ -961,7 +1088,7 @@ const DashboardTab: React.FC = () => {
 export const AdminDashboard: React.FC = () => {
   const [authed, setAuthed] = useState(false);
   const [user, setUser] = useState<{ email: string; role: string } | null>(null);
-  const [tab, setTab] = useState<'dashboard' | 'orders' | 'products' | 'settings' | 'users' | 'logs'>('dashboard');
+  const [tab, setTab] = useState<'dashboard' | 'orders' | 'clients' | 'products' | 'settings' | 'users' | 'logs'>('dashboard');
   const [init, setInit] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(typeof window !== 'undefined' ? window.innerWidth > 768 : true);
 
@@ -1001,6 +1128,7 @@ export const AdminDashboard: React.FC = () => {
   const tabs = [
     { id: 'dashboard' as const, label: 'Dashboard', icon: 'dashboard' },
     { id: 'orders' as const, label: 'Pedidos', icon: 'receipt_long' },
+    { id: 'clients' as const, label: 'Clientes', icon: 'people' },
     { id: 'products' as const, label: 'Produtos', icon: 'inventory_2' },
     { id: 'settings' as const, label: 'Configurações', icon: 'settings' },
     ...(!isEditor ? [
@@ -1091,6 +1219,7 @@ export const AdminDashboard: React.FC = () => {
         <div className="flex-1 p-4 md:p-8 overflow-y-auto">
           {tab === 'dashboard' && <DashboardTab />}
           {tab === 'orders' && <OrdersTab />}
+          {tab === 'clients' && <ClientsTab />}
           {tab === 'products' && <ProductsTab />}
           {tab === 'settings' && <SettingsTab role={user?.role || 'EDITOR'} />}
           {tab === 'users' && !isEditor && <UsersTab />}
