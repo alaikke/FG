@@ -22,7 +22,7 @@ jobs:
             
             # Backend
             cd backend
-            npm ci
+            npm install
             npx prisma generate
             npx prisma db push
             npm run build
@@ -30,7 +30,7 @@ jobs:
             
             # Frontend (build estático — Nginx serve)
             cd ../frontend
-            npm ci
+            npm install
             npm run build
             
             # Copiar build para Nginx
