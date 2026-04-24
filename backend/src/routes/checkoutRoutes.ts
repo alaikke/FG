@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { prisma } from '../server';
 import axios from 'axios';
+import { triggerOrderCreated, triggerOrderPaid } from '../utils/webhookSender';
 
 export default async function checkoutRoutes(fastify: FastifyInstance) {
   
@@ -22,6 +23,9 @@ export default async function checkoutRoutes(fastify: FastifyInstance) {
           currentFollowers: currentFollowers || null,
         }
       });
+
+      // Dispara webhook pro n8n sobre carrinho abandonado
+      triggerOrderCreated(order);
 
       // Chama a PoloPag API v1 para Gerar a Transação PIX (OpenAPI Docs)
       const poloReq = await axios.post('https://api.polopag.com/v1/cobpix', {
@@ -103,6 +107,9 @@ export default async function checkoutRoutes(fastify: FastifyInstance) {
           data: { paymentStatus: 'PAID' }
         });
 
+        // Notifica agente via n8n (Pedido Pago)
+        triggerOrderPaid(order);
+
         // 3. (FASE 3) DISPARAR PROVEDOR BARATOSOCIAIS NO MESMO SEGUNDO!
         fastify.log.info(`PIX Aprovado para Ordem: ${order.id}. Disparando SMM BaratoSociais...`);
         
@@ -181,6 +188,9 @@ export default async function checkoutRoutes(fastify: FastifyInstance) {
             where: { id: order.id },
             data: { paymentStatus: 'PAID' }
           });
+
+          // Notifica agente via n8n (Pedido Pago)
+          triggerOrderPaid(order);
 
           // Disparar BaratoSociais automaticamente
           fastify.log.info(`PIX Aprovado (polling) para Ordem: ${order.id}. Disparando SMM...`);

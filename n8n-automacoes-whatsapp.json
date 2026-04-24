@@ -1,0 +1,220 @@
+{
+  "name": "Automações WhatsApp - FastGram",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "order-created",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "webhook-order-created",
+      "name": "Webhook Carrinho Abandonado",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        100,
+        200
+      ],
+      "webhookId": "order-created-fastgram"
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "minutes"
+      },
+      "id": "wait-node",
+      "name": "Wait 3 Minutes",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        300,
+        200
+      ],
+      "webhookId": "wait-webhook"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://zap.fastgram.com.br/api/agent/orders/{{ $('Webhook Carrinho Abandonado').item.json.body.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "check-status-node",
+      "name": "Check Order Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        500,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.paymentStatus }}",
+              "value2": "PENDING"
+            }
+          ]
+        }
+      },
+      "id": "if-pending-node",
+      "name": "Is Still Pending?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        700,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://zap.fastgram.com.br/message/sendText/FastGram_Bot",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "B4K1L3V7H8F9X2P5R6M4N1C0Z9Y8W7Q"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $('Webhook Carrinho Abandonado').item.json.body.clientPhoneFormatted }}\",\n  \"text\": \"Olá {{ $('Webhook Carrinho Abandonado').item.json.body.clientName }}! Percebi que você iniciou a compra de {{ $('Webhook Carrinho Abandonado').item.json.body.followersCount }} seguidores mas não finalizou.\\n\\nTem alguma dúvida ou dificuldade com o pagamento? 🤔\\n\\nSe quiser continuar de onde parou, basta acessar este link: https://fastgram.com.br/checkout\"\n}",
+        "options": {}
+      },
+      "id": "send-abandoned-node",
+      "name": "Send Abandoned Cart Msg",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        940,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "order-paid",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "webhook-order-paid",
+      "name": "Webhook Pedido Pago",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        100,
+        500
+      ],
+      "webhookId": "order-paid-fastgram"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://zap.fastgram.com.br/message/sendText/FastGram_Bot",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "B4K1L3V7H8F9X2P5R6M4N1C0Z9Y8W7Q"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.body.clientPhoneFormatted }}\",\n  \"text\": \"Tudo certo com o pagamento, {{ $json.body.clientName }}! ✅\\n\\nO pedido para o perfil *@{{ $json.body.instagramUser }}* ({{ $json.body.followersCount }} seguidores) já está sendo processado pelo nosso sistema.\\n\\nQualquer dúvida, basta responder aqui!\"\n}",
+        "options": {}
+      },
+      "id": "send-paid-node",
+      "name": "Send Order Confirmed Msg",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        300,
+        500
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Carrinho Abandonado": {
+      "main": [
+        [
+          {
+            "node": "Wait 3 Minutes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 3 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Check Order Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Order Status": {
+      "main": [
+        [
+          {
+            "node": "Is Still Pending?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Still Pending?": {
+      "main": [
+        [
+          {
+            "node": "Send Abandoned Cart Msg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Pedido Pago": {
+      "main": [
+        [
+          {
+            "node": "Send Order Confirmed Msg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

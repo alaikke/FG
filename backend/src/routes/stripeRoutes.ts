@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { prisma } from '../server';
 import Stripe from 'stripe';
+import { triggerOrderCreated, triggerOrderPaid } from '../utils/webhookSender';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
@@ -72,6 +73,12 @@ export default async function stripeRoutes(fastify: FastifyInstance) {
           clientPhone: phone
         }
       });
+
+      const updatedOrder = await prisma.order.findUnique({ where: { id } });
+      if (updatedOrder) {
+        triggerOrderCreated(updatedOrder);
+      }
+
       return { success: true };
     } catch (err: any) {
       return reply.status(500).send({ error: 'Failed to update order details' });
@@ -117,10 +124,11 @@ export default async function stripeRoutes(fastify: FastifyInstance) {
 
         if (order && order.paymentStatus === 'PENDING') {
           // Update to PAID
-          await prisma.order.update({
+          const updatedOrder = await prisma.order.update({
             where: { id: order.id },
             data: { paymentStatus: 'PAID' }
           });
+          triggerOrderPaid(updatedOrder);
 
           // API BaratoSociais Integration
           const BARATO_API_URL = process.env.PROVIDER_API_URL || 'https://baratosociais.com/api/v2';

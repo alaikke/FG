@@ -1,27 +1,47 @@
 {
-  "name": "Agente WhatsApp - FastGram",
+  "name": "Agente WhatsApp - FastGram (Evolution API)",
   "nodes": [
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "uazapi-webhook",
-        "responseMode": "lastNode",
+        "path": "evolution-webhook",
+        "responseMode": "onReceived",
         "options": {}
       },
       "id": "2e6840d2-9ea8-4d5c-b17e-97645d9472bb",
-      "name": "Webhook UazAPI",
+      "name": "Webhook Evolution API",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1.1,
       "position": [
         220,
         340
       ],
-      "webhookId": "9b1fb428-ec2f-410a-a0f5-5139a0ef2f1c"
+      "webhookId": "evolution-webhook-fastgram"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.body.data.key.fromMe }}",
+              "value2": false
+            }
+          ]
+        }
+      },
+      "id": "e4f5a3b2-7a8d-4c5e-b9f0-8a7b6c5d4e3f",
+      "name": "Ignorar Mensagens Próprias",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        400,
+        340
+      ]
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=O usuário enviou a seguinte mensagem no WhatsApp:\n\n{{ $json.body.message.text || $json.body.message.caption }}\n\nCelular: {{ $json.body.message.remoteJid }}",
+        "text": "=O usuário enviou a seguinte mensagem no WhatsApp:\n\n{{ $json.body.data.message.conversation || $json.body.data.message.extendedTextMessage.text || '' }}\n\nCelular: {{ $json.body.data.key.remoteJid }}",
         "options": {
           "systemMessage": "Você é o assistente virtual de atendimento da FastGram. \nSeu objetivo é ajudar os clientes a consultarem o status de seus pedidos ou entenderem nossos preços.\nSeja educado, direto e responda em português.\nSempre que o cliente perguntar o status de um pedido e fornecer o ID, use a ferramenta 'ConsultarPedido' para obter a resposta exata."
         }
@@ -31,8 +51,8 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
       "position": [
-        460,
-        340
+        640,
+        320
       ]
     },
     {
@@ -45,8 +65,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1,
       "position": [
-        460,
-        560
+        640,
+        540
       ],
       "credentials": {
         "openAiApi": {
@@ -57,7 +77,7 @@
     },
     {
       "parameters": {
-        "sessionKey": "={{ $('Webhook UazAPI').item.json.body.message.remoteJid }}",
+        "sessionKey": "={{ $('Webhook Evolution API').item.json.body.data.key.remoteJid }}",
         "contextWindowLength": 10
       },
       "id": "memory-window-node",
@@ -65,8 +85,8 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.2,
       "position": [
-        300,
-        560
+        480,
+        540
       ]
     },
     {
@@ -92,8 +112,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
       "typeVersion": 1.1,
       "position": [
-        680,
-        560
+        860,
+        540
       ],
       "parameters": {
         "name": "ConsultarPedido",
@@ -103,13 +123,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.uazapi.com/v1/instance/{{ $('Webhook UazAPI').item.json.body.instance }}/message/sendText",
+        "url": "=https://zap.fastgram.com.br/message/sendText/{{ $('Webhook Evolution API').item.json.body.instance }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "apikey",
-              "value": "COLE_SUA_API_KEY_DA_UAZAPI_AQUI"
+              "value": "B4K1L3V7H8F9X2P5R6M4N1C0Z9Y8W7Q"
             },
             {
               "name": "Content-Type",
@@ -119,7 +139,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('Webhook UazAPI').item.json.body.message.remoteJid }}\",\n  \"text\": \"{{ $json.output }}\"\n}",
+        "jsonBody": "={\n  \"number\": \"{{ $('Webhook Evolution API').item.json.body.data.key.remoteJid }}\",\n  \"text\": \"{{ $json.output }}\"\n}",
         "options": {}
       },
       "id": "b3e0c090-cc5b-43de-b82b-c8c3e6dc2af4",
@@ -127,13 +147,24 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        820,
-        340
+        1000,
+        320
       ]
     }
   ],
   "connections": {
-    "Webhook UazAPI": {
+    "Webhook Evolution API": {
+      "main": [
+        [
+          {
+            "node": "Ignorar Mensagens Próprias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ignorar Mensagens Próprias": {
       "main": [
         [
           {
