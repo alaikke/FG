@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { API_BASE } from '../config';
+import { WhatsappConfig } from './Admin/WhatsappConfig';
 
 const API = API_BASE;
 
@@ -1088,7 +1089,7 @@ const DashboardTab: React.FC = () => {
 export const AdminDashboard: React.FC = () => {
   const [authed, setAuthed] = useState(false);
   const [user, setUser] = useState<{ email: string; role: string } | null>(null);
-  const [tab, setTab] = useState<'dashboard' | 'orders' | 'clients' | 'products' | 'settings' | 'users' | 'logs'>('dashboard');
+  const [tab, setTab] = useState<'dashboard' | 'orders' | 'clients' | 'products' | 'settings' | 'whatsapp' | 'users' | 'logs'>('dashboard');
   const [init, setInit] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(typeof window !== 'undefined' ? window.innerWidth > 768 : true);
 
@@ -1131,6 +1132,7 @@ export const AdminDashboard: React.FC = () => {
     { id: 'clients' as const, label: 'Clientes', icon: 'people' },
     { id: 'products' as const, label: 'Produtos', icon: 'inventory_2' },
     { id: 'settings' as const, label: 'Configurações', icon: 'settings' },
+    { id: 'whatsapp' as const, label: 'WhatsApp', icon: 'chat' },
     ...(!isEditor ? [
       { id: 'users' as const, label: 'Usuários', icon: 'group' },
       { id: 'logs' as const, label: 'Histórico', icon: 'history' },
@@ -1222,6 +1224,7 @@ export const AdminDashboard: React.FC = () => {
           {tab === 'clients' && <ClientsTab />}
           {tab === 'products' && <ProductsTab />}
           {tab === 'settings' && <SettingsTab role={user?.role || 'EDITOR'} />}
+          {tab === 'whatsapp' && <WhatsappConfig />}
           {tab === 'users' && !isEditor && <UsersTab />}
           {tab === 'logs' && !isEditor && <LogsTab />}
         </div>

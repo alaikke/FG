@@ -1,0 +1,10 @@
+#!/usr/bin/expect -f
+set timeout 120
+set password "RiO+NQ45lk),cuhM"
+set ip "31.97.83.80"
+
+puts "Executando Certbot na VPS..."
+spawn ssh -o StrictHostKeyChecking=no root@$ip "apt-get update && apt-get install -y python3-certbot-nginx && certbot --nginx -d ene8ene.fastgram.com.br --non-interactive --agree-tos -m alaikke@gmail.com"
+expect "*?assword:*"
+send "$password\r"
+expect eof

@@ -83,12 +83,14 @@ import checkoutRoutes from './routes/checkoutRoutes';
 import adminRoutes from './routes/adminRoutes';
 import stripeRoutes from './routes/stripeRoutes';
 import agentRoutes from './routes/agentRoutes';
+import whatsappRoutes from './routes/whatsappRoutes';
 
 // Registra as rotas
 fastify.register(checkoutRoutes);
 fastify.register(adminRoutes);
 fastify.register(stripeRoutes);
 fastify.register(agentRoutes);
+fastify.register(whatsappRoutes);
 
 // Inicialização do Servidor
 const start = async () => {

@@ -1,0 +1,195 @@
+{
+  "name": "Agente WhatsApp - FastGram",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "uazapi-webhook",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "2e6840d2-9ea8-4d5c-b17e-97645d9472bb",
+      "name": "Webhook UazAPI",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        220,
+        340
+      ],
+      "webhookId": "9b1fb428-ec2f-410a-a0f5-5139a0ef2f1c"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=O usuário enviou a seguinte mensagem no WhatsApp:\n\n{{ $json.body.message.text || $json.body.message.caption }}\n\nCelular: {{ $json.body.message.remoteJid }}",
+        "options": {
+          "systemMessage": "Você é o assistente virtual de atendimento da FastGram. \nSeu objetivo é ajudar os clientes a consultarem o status de seus pedidos ou entenderem nossos preços.\nSeja educado, direto e responda em português.\nSempre que o cliente perguntar o status de um pedido e fornecer o ID, use a ferramenta 'ConsultarPedido' para obter a resposta exata."
+        }
+      },
+      "id": "e285a210-67c4-406a-8d30-b30a597db244",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        460,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {}
+      },
+      "id": "1d8eb6d4-839f-4dbd-bedc-bd940dcf906c",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        460,
+        560
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionKey": "={{ $('Webhook UazAPI').item.json.body.message.remoteJid }}",
+        "contextWindowLength": 10
+      },
+      "id": "memory-window-node",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.2,
+      "position": [
+        300,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://fastgram.com.br/api/agent/orders/{{$fromAI('orderId')}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": false,
+        "specifyBody": "json",
+        "jsonBody": "",
+        "options": {}
+      },
+      "id": "tool-consultar-pedido",
+      "name": "ConsultarPedido",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        680,
+        560
+      ],
+      "parameters": {
+        "name": "ConsultarPedido",
+        "description": "Use esta ferramenta para consultar o status de um pedido. Requer o ID do pedido (orderId) como parâmetro."
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.uazapi.com/v1/instance/{{ $('Webhook UazAPI').item.json.body.instance }}/message/sendText",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "COLE_SUA_API_KEY_DA_UAZAPI_AQUI"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $('Webhook UazAPI').item.json.body.message.remoteJid }}\",\n  \"text\": \"{{ $json.output }}\"\n}",
+        "options": {}
+      },
+      "id": "b3e0c090-cc5b-43de-b82b-c8c3e6dc2af4",
+      "name": "Enviar Resposta WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        820,
+        340
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook UazAPI": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Enviar Resposta WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConsultarPedido": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
