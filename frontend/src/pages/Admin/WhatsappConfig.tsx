@@ -37,7 +37,10 @@ export const WhatsappConfig: React.FC = () => {
   const generateQrCode = async () => {
     setConnecting(true);
     try {
-      const res = await authFetch(`${API}/api/whatsapp/connect`, { method: 'POST' });
+      const res = await authFetch(`${API}/api/whatsapp/connect`, { 
+        method: 'POST',
+        body: JSON.stringify({})
+      });
       if (res.ok) {
         const data = await res.json();
         if (data.qrcode && data.qrcode.base64) {
@@ -60,7 +63,10 @@ export const WhatsappConfig: React.FC = () => {
     if (!confirm('Tem certeza que deseja desconectar o WhatsApp atual?')) return;
     setLoading(true);
     try {
-      await authFetch(`${API}/api/whatsapp/disconnect`, { method: 'POST' });
+      await authFetch(`${API}/api/whatsapp/disconnect`, { 
+        method: 'POST',
+        body: JSON.stringify({})
+      });
       setStatus({ state: 'disconnected' });
       setQrCode(null);
     } catch (e) {
