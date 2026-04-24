@@ -141,7 +141,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('Webhook Evolution API').item.json.body.data.key.remoteJid }}\",\n  \"text\": \"{{ $json.output }}\"\n}",
+        "jsonBody": "={{ JSON.stringify({ \"number\": $(\"Webhook Evolution API\").item.json.body.data.participant || $(\"Webhook Evolution API\").item.json.body.data.key.remoteJid, \"textMessage\": { \"text\": ($json.output.split('<resposta>').pop().replace('</resposta>', '').trim()) } }) }}",
         "options": {}
       },
       "id": "b3e0c090-cc5b-43de-b82b-c8c3e6dc2af4",

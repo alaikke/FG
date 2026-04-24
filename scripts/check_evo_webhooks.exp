@@ -1,0 +1,9 @@
+#!/usr/bin/expect -f
+set timeout 60
+set password "RiO+NQ45lk),cuhM"
+set ip "31.97.83.80"
+
+spawn ssh -o StrictHostKeyChecking=no root@$ip "curl -X GET 'http://127.0.0.1:8080/webhook/find/FastGram_Bot' -H 'apikey: B4K1L3V7H8F9X2P5R6M4N1C0Z9Y8W7Q'"
+expect "*?assword:*"
+send "$password\r"
+expect eof

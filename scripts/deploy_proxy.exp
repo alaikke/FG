@@ -1,0 +1,14 @@
+#!/usr/bin/expect -f
+set timeout 60
+set password "RiO+NQ45lk),cuhM"
+set ip "31.97.83.80"
+
+spawn scp -o StrictHostKeyChecking=no scripts/lid-proxy.py root@$ip:/opt/lid-proxy.py
+expect "*?assword:*"
+send "$password\r"
+expect eof
+
+spawn ssh -o StrictHostKeyChecking=no root@$ip "pm2 start /opt/lid-proxy.py --name lid-proxy --interpreter python3 && pm2 save"
+expect "*?assword:*"
+send "$password\r"
+expect eof
