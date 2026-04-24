@@ -44,7 +44,7 @@
         "promptType": "define",
         "text": "=O usuário enviou a seguinte mensagem no WhatsApp:\n\n{{ $json.body.data.message.conversation || $json.body.data.message.extendedTextMessage.text || '' }}\n\nCelular: {{ $json.body.data.key.remoteJid }}",
         "options": {
-          "systemMessage": "Você é o assistente da FastGram, uma plataforma de compra de seguidores para Instagram.\nRegras:\n1. Responda SEMPRE em português brasileiro, de forma curta e educada.\n2. Se o cliente perguntar sobre pedido e fornecer um ID, use a ferramenta ConsultarPedido.\n3. Se o cliente perguntar preços: use a ferramenta ConsultarPrecos. Se não puder usar a ferramenta agora, o preço padrão é 1.000 seguidores por R$39,90.\n4. Não invente informações. Se não souber, peça mais detalhes."
+          "systemMessage": "Você é o assistente de vendas da FastGram, plataforma de compra de seguidores para Instagram.\nRegras OBRIGATÓRIAS:\n1. Você deve falar ESTRITAMENTE em Português do Brasil (pt-BR). NUNCA use inglês.\n2. Ao mostrar os preços dos planos, retorne APENAS a quantidade de seguidores e o preço em formato de lista simples.\nEXEMPLO EXATO DE FORMATO:\n*100 seguidores* R$9,90\n*1.000 seguidores* R$39,90\n*2.000 seguidores* R$69,90\n*5.000 seguidores* R$89,90\n*10.000 seguidores* R$169,90\n*25.000 seguidores* R$349,90\nNUNCA adicione descrições como \"Volume Imediato\" ou \"Público Nacional\". Apenas quantidade e preço!\n3. NUNCA mostre seu processo de pensamento ou raciocínio na resposta final.\n4. Se o cliente perguntar sobre pedido e fornecer um ID, use a ferramenta ConsultarPedido.\n5. Se o cliente perguntar os preços e você precisar buscar do sistema, chame a ferramenta ConsultarPrecos.\n6. OBRIGATÓRIO: Você deve envolver a sua resposta final nas tags <resposta> e </resposta>. Exemplo: <resposta>Olá! Como posso ajudar?</resposta>"
         }
       },
       "id": "e285a210-67c4-406a-8d30-b30a597db244",
@@ -96,21 +96,8 @@
     },
     {
       "parameters": {
-        "method": "GET",
-        "url": "=https://fastgram.com.br/api/agent/orders/{{$fromAI('orderId')}}",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Accept",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": false,
-        "specifyBody": "json",
-        "jsonBody": "",
-        "options": {}
+        "name": "ConsultarPedido",
+        "description": "Use esta ferramenta para consultar o status de um pedido. Requer o ID do pedido (orderId) como parâmetro."
       },
       "id": "tool-consultar-pedido",
       "name": "ConsultarPedido",
@@ -119,29 +106,12 @@
       "position": [
         860,
         540
-      ],
-      "parameters": {
-        "name": "ConsultarPedido",
-        "description": "Use esta ferramenta para consultar o status de um pedido. Requer o ID do pedido (orderId) como parâmetro."
-      }
+      ]
     },
     {
       "parameters": {
-        "method": "GET",
-        "url": "https://fastgram.com.br/api/agent/prices",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Accept",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": false,
-        "specifyBody": "json",
-        "jsonBody": "",
-        "options": {}
+        "name": "ConsultarPrecos",
+        "description": "Use esta ferramenta para consultar a lista de produtos, quantidades de seguidores e preços atuais."
       },
       "id": "tool-consultar-precos",
       "name": "ConsultarPrecos",
@@ -150,11 +120,7 @@
       "position": [
         860,
         700
-      ],
-      "parameters": {
-        "name": "ConsultarPrecos",
-        "description": "Use esta ferramenta para consultar a lista de produtos, quantidades de seguidores e preços atuais."
-      }
+      ]
     },
     {
       "parameters": {

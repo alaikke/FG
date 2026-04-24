@@ -1,0 +1,9 @@
+#!/usr/bin/expect -f
+set timeout 60
+set password "RiO+NQ45lk),cuhM"
+set ip "31.97.83.80"
+
+spawn ssh -o StrictHostKeyChecking=no root@$ip "docker logs --tail 200 n8n-n8n-1"
+expect "*?assword:*"
+send "$password\r"
+expect eof
