@@ -9,10 +9,7 @@ export default async function agentRoutes(fastify: FastifyInstance) {
     
     try {
       const order = await prisma.order.findUnique({
-        where: { id: id },
-        include: {
-          items: true // Incluir detalhes dos items, se houver
-        }
+        where: { id: id }
       });
 
       if (!order) {
@@ -23,11 +20,12 @@ export default async function agentRoutes(fastify: FastifyInstance) {
         id: order.id,
         status: order.paymentStatus,
         createdAt: order.createdAt,
-        total: order.total,
-        customerName: order.customerName,
-        customerEmail: order.customerEmail,
-        customerPhone: order.customerPhone,
-        items: order.items
+        total: order.price,
+        clientName: order.clientName,
+        clientEmail: order.clientEmail,
+        clientPhone: order.clientPhone,
+        instagramUser: order.instagramUser,
+        followersCount: order.followersCount
       });
     } catch (error) {
       request.log.error(error);
@@ -41,10 +39,10 @@ export default async function agentRoutes(fastify: FastifyInstance) {
       const products = await prisma.product.findMany({
         select: {
           id: true,
-          platform: true,
-          type: true,
-          quantity: true,
-          price: true
+          followers: true,
+          subtitle: true,
+          price: true,
+          features: true
         }
       });
       return reply.send(products);
