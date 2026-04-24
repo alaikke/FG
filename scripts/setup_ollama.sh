@@ -50,11 +50,11 @@ for i in $(seq 1 12); do
     sleep 5
 done
 
-# 6. Baixar o modelo qwen3:4b (otimo em tool-calling, leve em RAM)
-echo "Baixando modelo qwen3:4b (~2.5GB)... Isso pode levar alguns minutos."
-docker exec ollama ollama pull qwen3:4b
+# 6. Baixar o modelo llama3.2:3b
+echo "Baixando modelo llama3.2:3b... Isso pode levar alguns minutos."
+docker exec ollama ollama pull llama3.2:3b
 
-echo "✅ Modelo qwen3:4b baixado com sucesso!"
+echo "✅ Modelo llama3.2:3b baixado com sucesso!"
 
 # 7. Criar rede Docker compartilhada para comunicação n8n <-> ollama
 echo "Criando rede Docker compartilhada..."
@@ -84,7 +84,7 @@ echo ""
 echo ""
 echo "Testando geração de texto..."
 RESPONSE=$(curl -s http://127.0.0.1:11434/api/chat -d '{
-  "model": "qwen3:4b",
+  "model": "llama3.2:3b",
   "messages": [{"role": "user", "content": "Responda em uma frase: Qual seu nome?"}],
   "stream": false
 }')
@@ -113,7 +113,7 @@ echo "4. Salve e teste a conexão"
 echo "5. No workflow do Agente WhatsApp:"
 echo "   - Remova o nó 'OpenAI Chat Model'"
 echo "   - Adicione o nó 'Ollama Chat Model'"
-echo "   - Selecione o modelo 'qwen3:4b'"
+echo "   - Selecione o modelo 'llama3.2:3b'"
 echo "   - Conecte ao nó 'AI Agent'"
 echo ""
 echo "RAM atual do servidor:"

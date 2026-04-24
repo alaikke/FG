@@ -1,0 +1,6 @@
+#!/usr/bin/expect -f
+set timeout 10
+spawn ssh -o StrictHostKeyChecking=no root@31.97.83.80 "curl -s http://localhost:11434/api/tags"
+expect "*?assword:*"
+send "RiO+NQ45lk),cuhM\r"
+expect eof

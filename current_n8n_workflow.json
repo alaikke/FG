@@ -1,0 +1,533 @@
+{
+  "updatedAt": "2026-04-24T07:27:11.000Z",
+  "createdAt": "2026-04-24T03:07:52.749Z",
+  "id": "5uGFiqnClDRQi935",
+  "name": "Agente WhatsApp - FastGram (Evolution API)",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "evolution-webhook",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "2e6840d2-9ea8-4d5c-b17e-97645d9472bb",
+      "name": "Webhook Evolution API",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        220,
+        340
+      ],
+      "webhookId": "evolution-webhook-fastgram"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.body.data.key.fromMe }}",
+              "value2": false
+            }
+          ]
+        }
+      },
+      "id": "e4f5a3b2-7a8d-4c5e-b9f0-8a7b6c5d4e3f",
+      "name": "Ignorar Mensagens Próprias",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        400,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=O usuário enviou a seguinte mensagem no WhatsApp:\n\n{{ $json.body.data.message.conversation || $json.body.data.message.extendedTextMessage.text || '' }}\n\nCelular: {{ $json.body.data.key.remoteJid }}",
+        "options": {
+          "systemMessage": "Você é o assistente da FastGram, uma plataforma de compra de seguidores para Instagram.\nRegras OBRIGATÓRIAS:\n1. Responda SEMPRE E APENAS em português brasileiro, de forma curta e educada.\n2. NUNCA mostre seu processo de pensamento ou raciocínio na resposta final.\n3. Se o cliente perguntar sobre pedido e fornecer um ID, use a ferramenta ConsultarPedido.\n4. Se o cliente perguntar preços: use a ferramenta ConsultarPrecos.\n5. OBRIGATÓRIO: Você deve envolver a sua resposta final em português nas tags <resposta> e </resposta>. Por exemplo: <resposta>Olá! Como posso ajudar?</resposta>"
+        }
+      },
+      "id": "e285a210-67c4-406a-8d30-b30a597db244",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        640,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:3b",
+        "options": {
+          "temperature": 0.4,
+          "numCtx": 2048,
+          "keepAlive": "10m"
+        }
+      },
+      "id": "1d8eb6d4-839f-4dbd-bedc-bd940dcf906c",
+      "name": "Ollama Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        640,
+        540
+      ],
+      "credentials": {
+        "ollamaApi": {
+          "id": "ollama-fastgram",
+          "name": "Ollama API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionKey": "={{ $(\"Webhook Evolution API\").item.json.body.data.participant || $(\"Webhook Evolution API\").item.json.body.data.key.remoteJid }}",
+        "contextWindowLength": 10,
+        "sessionIdType": "customKey"
+      },
+      "id": "memory-window-node",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        540
+      ]
+    },
+    {
+      "parameters": {
+        "name": "ConsultarPedido",
+        "description": "Use esta ferramenta para consultar o status de um pedido. Requer o ID do pedido (orderId) como parâmetro.",
+        "method": "GET",
+        "url": "https://fastgram.com.br/api/agent/orders/{{ $parameter.orderId }}"
+      },
+      "id": "tool-consultar-pedido",
+      "name": "ConsultarPedido",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        860,
+        540
+      ]
+    },
+    {
+      "parameters": {
+        "name": "ConsultarPrecos",
+        "description": "Use esta ferramenta para consultar a lista de produtos, quantidades de seguidores e preços atuais.",
+        "method": "GET",
+        "url": "https://fastgram.com.br/api/agent/prices"
+      },
+      "id": "tool-consultar-precos",
+      "name": "ConsultarPrecos",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        860,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://zap.fastgram.com.br/message/sendText/{{ $('Webhook Evolution API').item.json.body.instance }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "B4K1L3V7H8F9X2P5R6M4N1C0Z9Y8W7Q"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ \"number\": $(\"Webhook Evolution API\").item.json.body.data.participant || $(\"Webhook Evolution API\").item.json.body.data.key.remoteJid, \"textMessage\": { \"text\": ($json.output.match(/<resposta>([\\\\s\\\\S]*?)<\\/resposta>/i) || [null, $json.output])[1].trim() } }) }}",
+        "options": {}
+      },
+      "id": "b3e0c090-cc5b-43de-b82b-c8c3e6dc2af4",
+      "name": "Enviar Resposta WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1000,
+        320
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Evolution API": {
+      "main": [
+        [
+          {
+            "node": "Ignorar Mensagens Próprias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ignorar Mensagens Próprias": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Enviar Resposta WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConsultarPedido": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConsultarPrecos": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "1dae1ca3-0267-47c3-bfc8-02e391d482ac",
+  "activeVersionId": "1dae1ca3-0267-47c3-bfc8-02e391d482ac",
+  "versionCounter": 106,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-04-24T03:07:52.757Z",
+      "createdAt": "2026-04-24T03:07:52.757Z",
+      "role": "workflow:owner",
+      "workflowId": "5uGFiqnClDRQi935",
+      "projectId": "V835olxN14EYHf1q",
+      "project": {
+        "updatedAt": "2026-04-24T01:10:19.200Z",
+        "createdAt": "2026-04-24T01:02:09.987Z",
+        "id": "V835olxN14EYHf1q",
+        "name": "Alaikke Pallaoro <deejayalaikke@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "1758be23-5698-4a64-af44-b2b05b285d23"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-04-24T08:06:23.285Z",
+    "createdAt": "2026-04-24T08:06:23.285Z",
+    "versionId": "1dae1ca3-0267-47c3-bfc8-02e391d482ac",
+    "workflowId": "5uGFiqnClDRQi935",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "evolution-webhook",
+          "responseMode": "onReceived",
+          "options": {}
+        },
+        "id": "2e6840d2-9ea8-4d5c-b17e-97645d9472bb",
+        "name": "Webhook Evolution API",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1.1,
+        "position": [
+          220,
+          340
+        ],
+        "webhookId": "evolution-webhook-fastgram"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "boolean": [
+              {
+                "value1": "={{ $json.body.data.key.fromMe }}",
+                "value2": false
+              }
+            ]
+          }
+        },
+        "id": "e4f5a3b2-7a8d-4c5e-b9f0-8a7b6c5d4e3f",
+        "name": "Ignorar Mensagens Próprias",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          400,
+          340
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=O usuário enviou a seguinte mensagem no WhatsApp:\n\n{{ $json.body.data.message.conversation || $json.body.data.message.extendedTextMessage.text || '' }}\n\nCelular: {{ $json.body.data.key.remoteJid }}",
+          "options": {
+            "systemMessage": "Você é o assistente da FastGram, uma plataforma de compra de seguidores para Instagram.\nRegras:\n1. Responda SEMPRE em português brasileiro, de forma curta e educada.\n2. Se o cliente perguntar sobre pedido e fornecer um ID, use a ferramenta ConsultarPedido.\n3. Se o cliente perguntar preços: use a ferramenta ConsultarPrecos. Se não puder usar a ferramenta agora, o preço padrão é 1.000 seguidores por R$39,90.\n4. Não invente informações. Se não souber, peça mais detalhes."
+          }
+        },
+        "id": "e285a210-67c4-406a-8d30-b30a597db244",
+        "name": "AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.7,
+        "position": [
+          640,
+          320
+        ]
+      },
+      {
+        "parameters": {
+          "model": "llama3.2:3b",
+          "options": {
+            "temperature": 0.4,
+            "numCtx": 2048,
+            "keepAlive": "10m"
+          }
+        },
+        "id": "1d8eb6d4-839f-4dbd-bedc-bd940dcf906c",
+        "name": "Ollama Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+        "typeVersion": 1,
+        "position": [
+          640,
+          540
+        ],
+        "credentials": {
+          "ollamaApi": {
+            "id": "ollama-fastgram",
+            "name": "Ollama API"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sessionKey": "={{ $(\"Webhook Evolution API\").item.json.body.data.participant || $(\"Webhook Evolution API\").item.json.body.data.key.remoteJid }}",
+          "contextWindowLength": 10,
+          "sessionIdType": "customKey"
+        },
+        "id": "memory-window-node",
+        "name": "Window Buffer Memory",
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.2,
+        "position": [
+          480,
+          540
+        ]
+      },
+      {
+        "parameters": {
+          "name": "ConsultarPedido",
+          "description": "Use esta ferramenta para consultar o status de um pedido. Requer o ID do pedido (orderId) como parâmetro.",
+          "method": "GET",
+          "url": "https://fastgram.com.br/api/agent/orders/{{ $parameter.orderId }}"
+        },
+        "id": "tool-consultar-pedido",
+        "name": "ConsultarPedido",
+        "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+        "typeVersion": 1.1,
+        "position": [
+          860,
+          540
+        ]
+      },
+      {
+        "parameters": {
+          "name": "ConsultarPrecos",
+          "description": "Use esta ferramenta para consultar a lista de produtos, quantidades de seguidores e preços atuais.",
+          "method": "GET",
+          "url": "https://fastgram.com.br/api/agent/prices"
+        },
+        "id": "tool-consultar-precos",
+        "name": "ConsultarPrecos",
+        "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+        "typeVersion": 1.1,
+        "position": [
+          860,
+          700
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://zap.fastgram.com.br/message/sendText/{{ $('Webhook Evolution API').item.json.body.instance }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "B4K1L3V7H8F9X2P5R6M4N1C0Z9Y8W7Q"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ \"number\": $(\"Webhook Evolution API\").item.json.body.data.participant || $(\"Webhook Evolution API\").item.json.body.data.key.remoteJid, \"textMessage\": { \"text\": ($json.output.match(/<resposta>([\\\\s\\\\S]*?)<\\/resposta>/i) || [null, $json.output])[1].trim() } }) }}",
+          "options": {}
+        },
+        "id": "b3e0c090-cc5b-43de-b82b-c8c3e6dc2af4",
+        "name": "Enviar Resposta WhatsApp",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          1000,
+          320
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook Evolution API": {
+        "main": [
+          [
+            {
+              "node": "Ignorar Mensagens Próprias",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Ignorar Mensagens Próprias": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Enviar Resposta WhatsApp",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Ollama Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "ConsultarPedido": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "ConsultarPrecos": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Window Buffer Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "import",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-04-24T08:06:23.639Z",
+        "id": 69,
+        "workflowId": "5uGFiqnClDRQi935",
+        "versionId": "1dae1ca3-0267-47c3-bfc8-02e391d482ac",
+        "event": "activated",
+        "userId": "1758be23-5698-4a64-af44-b2b05b285d23"
+      }
+    ]
+  }
+}

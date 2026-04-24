@@ -1,0 +1,12 @@
+#!/usr/bin/expect -f
+set timeout 600
+set password "RiO+NQ45lk),cuhM"
+set ip "31.97.83.80"
+
+puts "Executando pull no Ollama da VPS..."
+spawn ssh -o StrictHostKeyChecking=no root@$ip "docker exec ollama ollama pull llama3.2:3b"
+expect "*?assword:*"
+send "$password\r"
+expect eof
+
+puts "Finalizado!"
