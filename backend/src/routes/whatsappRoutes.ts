@@ -7,7 +7,7 @@ const EVOLUTION_API_URL = process.env.EVOLUTION_API_URL || 'http://localhost:808
 const EVOLUTION_API_KEY = process.env.EVOLUTION_API_KEY || '';
 
 // A fixed instance name for the FastGram bot
-const INSTANCE_NAME = 'Atendimento_FastGram';
+const INSTANCE_NAME = 'FastGram_Bot';
 
 export default async function whatsappRoutes(fastify: FastifyInstance) {
   // Auth middleware helper
@@ -72,7 +72,13 @@ export default async function whatsappRoutes(fastify: FastifyInstance) {
       const createData = await createRes.json();
       
       // If the instance already exists, we connect it to get the QR
-      if (!createRes.ok && createData.error?.includes('already exists')) {
+      const isAlreadyInUse = !createRes.ok && (
+        createData.response?.message?.[0]?.includes('already in use') || 
+        createData.error?.includes('already exists') ||
+        createRes.status === 403
+      );
+
+      if (isAlreadyInUse) {
         const connectRes = await fetch(`${EVOLUTION_API_URL}/instance/connect/${INSTANCE_NAME}`, {
           method: 'GET',
           headers
