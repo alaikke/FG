@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { API_BASE } from '../../../config';
+import { API_BASE } from '../../config';
 
 const API = API_BASE;
 
