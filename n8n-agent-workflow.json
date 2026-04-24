@@ -1,4 +1,5 @@
 {
+  "id": "5uGFiqnClDRQi935",
   "name": "Agente WhatsApp - FastGram (Evolution API)",
   "nodes": [
     {
@@ -43,7 +44,7 @@
         "promptType": "define",
         "text": "=O usuário enviou a seguinte mensagem no WhatsApp:\n\n{{ $json.body.data.message.conversation || $json.body.data.message.extendedTextMessage.text || '' }}\n\nCelular: {{ $json.body.data.key.remoteJid }}",
         "options": {
-          "systemMessage": "Você é o assistente virtual de atendimento da FastGram. \nSeu objetivo é ajudar os clientes a consultarem o status de seus pedidos ou entenderem nossos preços.\nSeja educado, direto e responda em português.\nSempre que o cliente perguntar o status de um pedido e fornecer o ID, use a ferramenta 'ConsultarPedido' para obter a resposta exata."
+          "systemMessage": "Você é o assistente da FastGram, uma plataforma de compra de seguidores para Instagram.\nRegras:\n1. Responda SEMPRE em português brasileiro, de forma curta e educada.\n2. Se o cliente perguntar sobre pedido e fornecer um ID, use a ferramenta ConsultarPedido.\n3. Se o cliente perguntar preços: use a ferramenta ConsultarPrecos. Se não puder usar a ferramenta agora, o preço padrão é 1.000 seguidores por R$39,90.\n4. Não invente informações. Se não souber, peça mais detalhes."
         }
       },
       "id": "e285a210-67c4-406a-8d30-b30a597db244",
@@ -57,21 +58,25 @@
     },
     {
       "parameters": {
-        "model": "gpt-4o-mini",
-        "options": {}
+        "model": "qwen3:1.7b",
+        "options": {
+          "temperature": 0.4,
+          "numCtx": 2048,
+          "keepAlive": "10m"
+        }
       },
       "id": "1d8eb6d4-839f-4dbd-bedc-bd940dcf906c",
-      "name": "OpenAI Chat Model",
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "name": "Ollama Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
       "typeVersion": 1,
       "position": [
         640,
         540
       ],
       "credentials": {
-        "openAiApi": {
-          "id": "",
-          "name": "OpenAI account"
+        "ollamaApi": {
+          "id": "ollama-fastgram",
+          "name": "Ollama API"
         }
       }
     },
@@ -118,6 +123,37 @@
       "parameters": {
         "name": "ConsultarPedido",
         "description": "Use esta ferramenta para consultar o status de um pedido. Requer o ID do pedido (orderId) como parâmetro."
+      }
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://fastgram.com.br/api/agent/prices",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": false,
+        "specifyBody": "json",
+        "jsonBody": "",
+        "options": {}
+      },
+      "id": "tool-consultar-precos",
+      "name": "ConsultarPrecos",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        860,
+        700
+      ],
+      "parameters": {
+        "name": "ConsultarPrecos",
+        "description": "Use esta ferramenta para consultar a lista de produtos, quantidades de seguidores e preços atuais."
       }
     },
     {
@@ -186,7 +222,7 @@
         ]
       ]
     },
-    "OpenAI Chat Model": {
+    "Ollama Chat Model": {
       "ai_languageModel": [
         [
           {
@@ -198,6 +234,17 @@
       ]
     },
     "ConsultarPedido": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConsultarPrecos": {
       "ai_tool": [
         [
           {

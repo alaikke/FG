@@ -1,0 +1,40 @@
+#!/usr/bin/expect -f
+set timeout 300
+set password "RiO+NQ45lk),cuhM"
+set ip "31.97.83.80"
+
+puts "🚀 Iniciando deploy para $ip..."
+
+# 1. Enviar arquivos atualizados
+puts "📦 Enviando arquivos para a VPS..."
+spawn scp -o StrictHostKeyChecking=no n8n-agent-workflow.json scripts/fix_thinking.py scripts/fix_thinking_v3.py root@$ip:/root/
+expect {
+    "*?assword:*" {
+        send "$password\r"
+        exp_continue
+    }
+    eof
+}
+
+# 2. Mover arquivos para os lugares corretos e reiniciar serviços
+puts "⚙️  Atualizando scripts e reiniciando backend..."
+spawn ssh -o StrictHostKeyChecking=no root@$ip {
+    # Mover scripts para /var/www/fastgram/scripts/
+    cp /root/fix_thinking.py /var/www/fastgram/scripts/
+    cp /root/fix_thinking_v3.py /var/www/fastgram/scripts/
+    chmod +x /var/www/fastgram/scripts/*.py
+    
+    # Reiniciar o backend via PM2
+    pm2 restart fastgram-api
+    
+    echo "✅ Deploy concluído com sucesso!"
+}
+expect {
+    "*?assword:*" {
+        send "$password\r"
+        exp_continue
+    }
+    eof
+}
+
+puts "🚀 Deploy finalizado!"
