@@ -1,0 +1,55 @@
+Fala mano, blz?! Já ajustei a página de Sucesso do FastGram. 
+
+Agora, sempre que uma compra for finalizada com sucesso, o site enviará os dados diretamente para o Data Layer (Camada de Dados) do GTM. 
+
+O formato que está sendo enviado para a camada de dados é este:
+
+dataLayer.push({
+  event: 'purchase',
+  value: 49.90,              // Valor final do pedido
+  order_id: '1234ABCD',      // ID único da transação
+  username: '@exemplo',      // Nome de usuário do Instagram do cliente
+  ecommerce: {               // Objeto padrão para GA4/Google Ads
+    transaction_id: '1234ABCD',
+    value: 49.90,
+    currency: 'BRL',
+    items: [{
+      item_name: '1000 Seguidores',
+      price: 49.90,
+      quantity: 1
+    }]
+  }
+});
+
+=======================================================
+PASSO A PASSO PARA VOCÊ CONFIGURAR NO GOOGLE TAG MANAGER:
+=======================================================
+
+1. CRIE AS VARIÁVEIS (Para capturar os dados isolados)
+Vá em Variáveis > Nova Variável > Tipo: Variável de Camada de Dados (Data Layer Variable)
+Crie três variáveis com as configurações abaixo:
+
+Variável 1 (Valor):
+- Nome da Variável de Camada de Dados: value
+- Versão da Camada de Dados: Versão 2
+
+Variável 2 (ID do Pedido):
+- Nome da Variável de Camada de Dados: order_id
+- Versão da Camada de Dados: Versão 2
+
+Variável 3 (Nome de Usuário do Instagram):
+- Nome da Variável de Camada de Dados: username
+- Versão da Camada de Dados: Versão 2
+
+2. CRIE O ACIONADOR (TRIGGER)
+Vá em Acionadores > Novo > Tipo: Evento Personalizado (Custom Event)
+- Nome do Evento: purchase
+(Esse acionador vai garantir que a tag só dispare na tela de sucesso, quando os dados já estiverem prontos)
+
+3. CONFIGURE A SUA TAG
+Na hora de criar ou editar a sua tag de conversão (seja Google Ads, Meta Ads, TikTok, etc):
+- No campo onde pede o "Valor / Value", você seleciona a variável do Data Layer que criou pro Valor. Ex: {{dlv - value}}
+- No campo onde pede "ID do Pedido / Transaction ID", você coloca a variável do ID. Ex: {{dlv - order_id}}
+- Se houver algum campo de parâmetro personalizado onde queira passar o nome de usuário (ex: user_id), você coloca a variável do username. Ex: {{dlv - username}}
+
+Nota para GA4 / Tags Nativas Google: O objeto "ecommerce" também está sendo enviado nos padrões do Google. Se a sua tag for nativa do GA4 e você marcar a opção "Enviar dados de comércio eletrônico (Send ecommerce data)", o GTM já vai conseguir puxar tudo automaticamente através daquele objeto.

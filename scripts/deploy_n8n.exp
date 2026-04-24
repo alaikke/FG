@@ -1,0 +1,16 @@
+#!/usr/bin/expect -f
+set timeout 120
+set password "RiO+NQ45lk),cuhM"
+set ip "31.97.83.80"
+
+puts "Copiando script para VPS..."
+spawn scp -o StrictHostKeyChecking=no scripts/fix_domain.sh root@$ip:/root/fix_domain.sh
+expect "*?assword:*"
+send "$password\r"
+expect eof
+
+puts "Executando script na VPS..."
+spawn ssh -o StrictHostKeyChecking=no root@$ip "chmod +x /root/fix_domain.sh && /root/fix_domain.sh"
+expect "*?assword:*"
+send "$password\r"
+expect eof

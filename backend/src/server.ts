@@ -82,11 +82,13 @@ fastify.get('/api/instagram/:username', async (request: any, reply) => {
 import checkoutRoutes from './routes/checkoutRoutes';
 import adminRoutes from './routes/adminRoutes';
 import stripeRoutes from './routes/stripeRoutes';
+import agentRoutes from './routes/agentRoutes';
 
 // Registra as rotas
 fastify.register(checkoutRoutes);
 fastify.register(adminRoutes);
 fastify.register(stripeRoutes);
+fastify.register(agentRoutes);
 
 // Inicialização do Servidor
 const start = async () => {
