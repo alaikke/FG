@@ -19,6 +19,7 @@ export default async function agentRoutes(fastify: FastifyInstance) {
       return reply.send({
         id: order.id,
         status: order.paymentStatus,
+        paymentStatus: order.paymentStatus,
         createdAt: order.createdAt,
         total: order.price,
         clientName: order.clientName,
