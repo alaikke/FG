@@ -58,7 +58,7 @@ export const Header: React.FC = () => {
             <Link to="/track" className={getLinkClass('/track')}>Acompanhar Pedido</Link>
           </div>
           <div className="flex items-center gap-4">
-            <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer" className="hidden md:flex items-center gap-2 bg-blue-600 text-white px-5 py-2 font-medium hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-600/30" style={{ borderRadius: '100px' }}>
+            <a href="https://wa.me/5548988332790" target="_blank" rel="noopener noreferrer" className="hidden md:flex items-center gap-2 bg-blue-600 text-white px-5 py-2 font-medium hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-600/30" style={{ borderRadius: '100px' }}>
               <span className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.6)]"></span>
               Suporte
             </a>
@@ -86,7 +86,7 @@ export const Header: React.FC = () => {
           <Link to="/track" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-bold text-slate-800 hover:text-blue-600 transition-colors py-3 border-b border-slate-100">Acompanhar Pedido</Link>
           
           <div className="pt-8">
-            <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-5 font-bold text-xl hover:opacity-90 transition-opacity shadow-2xl shadow-blue-600/30 active:scale-95" style={{ borderRadius: '100px' }}>
+            <a href="https://wa.me/5548988332790" target="_blank" rel="noopener noreferrer" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-5 font-bold text-xl hover:opacity-90 transition-opacity shadow-2xl shadow-blue-600/30 active:scale-95" style={{ borderRadius: '100px' }}>
               <span className="w-3.5 h-3.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_12px_rgba(74,222,128,0.8)] border-2 border-white"></span>
               Falar com o Suporte
             </a>
