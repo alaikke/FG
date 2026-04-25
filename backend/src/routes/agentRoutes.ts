@@ -1,5 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { prisma } from '../server';
+import { formatWhatsAppNumber } from '../utils/webhookSender';
 
 export default async function agentRoutes(fastify: FastifyInstance) {
   
@@ -25,6 +26,7 @@ export default async function agentRoutes(fastify: FastifyInstance) {
         clientName: order.clientName,
         clientEmail: order.clientEmail,
         clientPhone: order.clientPhone,
+        clientPhoneFormatted: formatWhatsAppNumber(order.clientPhone),
         instagramUser: order.instagramUser,
         followersCount: order.followersCount
       });
